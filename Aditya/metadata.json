@@ -1,0 +1,8 @@
+{
+  "name": "Maths Universe — Interactive Visual Proofs",
+  "description": "32 interactive visual mathematical proofs and animated geometry lessons with step-by-step explorations.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

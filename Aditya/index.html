@@ -1,0 +1,3089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maths Universe — Interactive Visual Proofs</title>
+  <meta name="description" content="32 interactive visual mathematical proofs and animated geometry lessons with step-by-step explorations.">
+  <meta property="og:title" content="Maths Universe — Interactive Visual Proofs">
+  <meta property="og:description" content="32 interactive visual mathematical proofs and animated geometry lessons with step-by-step explorations.">
+  <style>
+    :root {
+      --bg-canvas: #f8fafc;
+      --surface: #ffffff;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --purple-primary: #7c3aed;
+      --purple-dark: #6d28d9;
+      --purple-light: #ede9fe;
+      --text-main: #0f172a;
+      --text-body: #334155;
+      --text-muted: #64748b;
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-math: "Cambria Math", serif;
+      --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Left Sidebar */
+    .app-sidebar {
+      width: 230px;
+      background: var(--surface);
+      border-right: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 16px;
+      z-index: 40;
+    }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      padding: 0 8px 24px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .brand-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #1e1b4b;
+    }
+    .brand-sub {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--purple-primary);
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 20px;
+      list-style: none;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-link:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+    .nav-link.active {
+      background: var(--purple-light);
+      color: var(--purple-dark);
+      font-weight: 600;
+    }
+
+    /* Main Area */
+    .app-main {
+      flex: 1;
+      min-width: 0;
+      padding: 32px 40px 64px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .library-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .breadcrumb {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--purple-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .library-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+    .library-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 760px;
+      line-height: 1.5;
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 12px 18px;
+      box-shadow: var(--shadow-card);
+    }
+    .category-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cat-btn {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-body);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .cat-btn:hover {
+      background: #f1f5f9;
+    }
+    .cat-btn.active {
+      background: var(--purple-primary);
+      border-color: var(--purple-primary);
+      color: #ffffff;
+    }
+
+    .search-input {
+      background: #f8fafc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      color: var(--text-main);
+      width: 240px;
+      outline: none;
+      transition: all 0.15s;
+    }
+    .search-input:focus {
+      background: var(--surface);
+      border-color: var(--purple-primary);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    /* Cards Grid */
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .lesson-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+      will-change: transform, box-shadow;
+    }
+    .lesson-card:hover {
+      border-color: #c4b5fd;
+      transform: scale(1.02);
+      box-shadow: 0 14px 28px -4px rgba(15, 23, 42, 0.08), 0 6px 12px -2px rgba(124, 58, 237, 0.05);
+    }
+    .lesson-card:active {
+      transform: scale(1.0);
+      transition-duration: 0.1s;
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-num {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--purple-primary);
+      background: var(--purple-light);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .card-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cat-pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--purple-dark);
+      background: #f5f3ff;
+      padding: 3px 8px;
+      border-radius: 9999px;
+    }
+    .diff-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 9999px;
+    }
+    .student-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .student-status-badge.inprogress {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .student-status-badge.mastered {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    /* Student Learning Dashboard */
+    .mastery-dashboard-card {
+      background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+      border: 1px solid #e9d5ff;
+      border-radius: 16px;
+      padding: 18px 24px;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .mastery-dash-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .mastery-trophy {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .mastery-dash-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1e1b4b;
+    }
+    .mastery-dash-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .mastery-progress-bar-wrap {
+      flex: 1;
+      max-width: 320px;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+      min-width: 140px;
+    }
+    .mastery-progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed 0%, #10b981 100%);
+      border-radius: 9999px;
+      transition: width 0.4s ease;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+    .card-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .card-formula-pill {
+      background: #fafbfc;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-body);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-formula-pill strong {
+      font-family: var(--font-math);
+      color: var(--purple-dark);
+    }
+    .card-mission {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .card-time {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .btn-open-lesson {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+      transition: all 0.15s;
+    }
+    .btn-open-lesson:hover {
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .app-sidebar { width: 100%; height: auto; position: static; }
+      .nav-list { display: none; }
+      .app-main { padding: 20px; }
+      .lessons-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="app-sidebar">
+    <div>
+      <a href="index.html" class="brand-box">
+        <div class="brand-icon">📐</div>
+        <div class="brand-text">
+          <span class="brand-title">MATHS</span>
+          <span class="brand-sub">UNIVERSE</span>
+        </div>
+      </a>
+
+      <ul class="nav-list">
+        <li>
+          <a href="index.html" class="nav-link active">
+            <span class="nav-link-icon">🧭</span>
+            <span>Explore</span>
+          </a>
+        </li>
+        <li>
+          <a href="lesson-01.html" class="nav-link">
+            <span class="nav-link-icon">✨</span>
+            <span>Proofs</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" class="nav-link">
+            <span class="nav-link-icon">📝</span>
+            <span>Practice</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" class="nav-link">
+            <span class="nav-link-icon">🏆</span>
+            <span>Challenges</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" class="nav-link">
+            <span class="nav-link-icon">🔖</span>
+            <span>Saved</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="index-top-bar" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-bottom: 20px;">
+      <div class="lang-selector-wrap">
+        <label for="languageSelect" class="lang-select-label">🌐 LANGUAGE</label>
+        <select id="languageSelect" class="language-select">
+          <option value="auto">Auto Detect</option>
+          <option value="en-IN">English</option>
+          <option value="hi-IN">हिन्दी</option>
+          <option value="ta-IN">தமிழ்</option>
+          <option value="te-IN">తెలుగు</option>
+          <option value="ml-IN">മലയാളം</option>
+          <option value="kn-IN">ಕನ್ನಡ</option>
+          <option value="bn-IN">বাংলা</option>
+          <option value="mr-IN">मराठी</option>
+          <option value="gu-IN">ગુજરાતી</option>
+          <option value="pa-IN">ਪੰਜਾਬੀ</option>
+          <option value="ur-IN">اردو</option>
+          <option value="or-IN">ଓଡ଼ିଆ</option>
+        </select>
+      </div>
+      <button class="btn-header btn-maths-guide" id="btnAskGuide" style="padding: 7px 16px; font-weight: 700; border-radius: 10px; cursor: pointer;">🎤 Ask Maths Guide</button>
+    </div>
+
+    <div class="library-header">
+      <div class="breadcrumb">Maths Universe / Interactive Library</div>
+      <h1 class="library-title">32 Interactive Visual Proofs</h1>
+      <p class="library-desc">
+        Touch, scrub, and discover why mathematics works through geometric and algebraic transformations.
+        Each lesson is a self-contained interactive proof environment built with rigorous mathematical visual models.
+      </p>
+    </div>
+
+    <!-- Student Learning Dashboard -->
+    <div class="mastery-dashboard-card">
+      <div class="mastery-dash-left">
+        <div class="mastery-trophy">🎓</div>
+        <div>
+          <div class="mastery-dash-title">Student Learning Journey</div>
+          <div class="mastery-dash-sub">
+            <span id="statMasteredCount">0</span> of 32 Visual Proofs Mastered · <span id="statMasteredPercent">0%</span> Complete
+          </div>
+        </div>
+      </div>
+      <div class="mastery-progress-bar-wrap">
+        <div class="mastery-progress-bar-fill" id="masteryProgressFill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <div class="category-pills">
+        <button class="cat-btn active" data-filter="all">All (32)</button>
+        <button class="cat-btn" data-filter="mastered">⭐ Mastered (<span id="masteredFilterCount">0</span>)</button>
+        <button class="cat-btn" data-filter="inprogress">⏳ In Progress (<span id="inProgressFilterCount">0</span>)</button>
+        <button class="cat-btn" data-filter="geometry">Geometry (16)</button>
+        <button class="cat-btn" data-filter="algebra">Algebra (5)</button>
+        <button class="cat-btn" data-filter="calculus & limits">Calculus & Limits (6)</button>
+        <button class="cat-btn" data-filter="trigonometry">Trigonometry (2)</button>
+        <button class="cat-btn" data-filter="number theory">Number Theory (3)</button>
+      </div>
+
+      <input type="text" class="search-input" id="searchInput" placeholder="Search proofs or formulas...">
+    </div>
+
+    <div class="lessons-grid" id="lessonsGrid">
+      
+    <article class="lesson-card" data-category="geometry" data-title="pythagorean theorem: area rearrangement" data-lesson-id="lesson-01">
+      <div class="card-top">
+        <span class="card-num">01</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-01">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Pythagorean Theorem: Area Rearrangement</h3>
+      <p class="card-sub">Geometric proof that a² + b² = c² through isometric triangle shuffling</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>a² + b² = c²</strong>
+      </div>
+
+      <p class="card-mission">Prove that the sum of the squares on the legs of any right triangle equals the square on the hypotenuse by rearranging four identical copies inside an (a+b)×(a+b) boundary.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-01.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="area of circle by unrolling circumference" data-lesson-id="lesson-02">
+      <div class="card-top">
+        <span class="card-num">02</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-02">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Area of Circle by Unrolling Circumference</h3>
+      <p class="card-sub">Archimedes’ proof: unrolling concentric circular rings into a right triangle</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Area = ½ · Base · Height = ½ · (2πr) · r = πr²</strong>
+      </div>
+
+      <p class="card-mission">Demonstrate Archimedes’ intuitive calculus: by slicing a disk of radius r into thin concentric rings and unrolling them flat, they assemble into a right triangle of base 2πr and height r.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-02.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="area of circle by sector dissection" data-lesson-id="lesson-03">
+      <div class="card-top">
+        <span class="card-num">03</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-03">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Area of Circle by Sector Dissection</h3>
+      <p class="card-sub">Slicing a disk into interlocking wedges to construct an alternating parallelogram</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Area = Base · Height = (πr) · r = πr²</strong>
+      </div>
+
+      <p class="card-mission">Divide a circle into n alternating sectors, hinge them open, and interlock them head-to-tail to form a shape whose limit is an exact rectangle of dimensions πr × r.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-03.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="triangle angle sum: 180° proof" data-lesson-id="lesson-04">
+      <div class="card-top">
+        <span class="card-num">04</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-04">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Triangle Angle Sum: 180° Proof</h3>
+      <p class="card-sub">Parallel line transversals and vertex folding onto a straight line</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>∠A + ∠B + ∠C = 180°</strong>
+      </div>
+
+      <p class="card-mission">Demonstrate why the three interior angles of any triangle on a Euclidean plane always add up to 180° by folding them along midlines to meet at a single line point.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-04.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="area of a trapezoid: duplication & rotation" data-lesson-id="lesson-05">
+      <div class="card-top">
+        <span class="card-num">05</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-05">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Area of a Trapezoid: Duplication & Rotation</h3>
+      <p class="card-sub">Forming a parallelogram of base (a + b) and height h from two congruent trapezoids</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Area = ½ · (a + b) · h</strong>
+      </div>
+
+      <p class="card-mission">Prove that the area of any trapezoid with parallel sides a and b and height h is exactly ½(a+b)h by duplicating it, rotating the copy 180°, and joining them into a parallelogram.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-05.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="area of a triangle: shearing & cavalieri" data-lesson-id="lesson-06">
+      <div class="card-top">
+        <span class="card-num">06</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-06">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Area of a Triangle: Shearing & Cavalieri</h3>
+      <p class="card-sub">Continuous shear deformation preserving base, height, and area</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Area = ½ · Base · Height</strong>
+      </div>
+
+      <p class="card-mission">Demonstrate Cavalieri’s principle in 2D: sliding the top vertex of a triangle parallel to its base shears horizontal cross-sections without changing their lengths, strictly preserving total area.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-06.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="number theory" data-title="sum of odd numbers: l-shaped gnomons" data-lesson-id="lesson-07">
+      <div class="card-top">
+        <span class="card-num">07</span>
+        <div class="card-badges">
+          <span class="cat-pill">Number Theory</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-07">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Sum of Odd Numbers: L-Shaped Gnomons</h3>
+      <p class="card-sub">Visualizing 1 + 3 + 5 + ... + (2n - 1) = n² via nested corner brackets</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>1 + 3 + 5 + ... + (2n - 1) = n²</strong>
+      </div>
+
+      <p class="card-mission">Discover why summing the first n consecutive odd numbers always produces a perfect square n² by wrapping successive L-shaped borders (gnomons) around a unit square.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-07.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="number theory" data-title="sum of natural numbers: triangular numbers" data-lesson-id="lesson-08">
+      <div class="card-top">
+        <span class="card-num">08</span>
+        <div class="card-badges">
+          <span class="cat-pill">Number Theory</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-08">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Sum of Natural Numbers: Triangular Numbers</h3>
+      <p class="card-sub">Gauss’ proof: 1 + 2 + ... + n = n(n + 1)/2 via staircase rotation</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>1 + 2 + 3 + ... + n = \frac{n(n + 1)}{2}</strong>
+      </div>
+
+      <p class="card-mission">Prove Carl Friedrich Gauss’ famous summation formula by duplicating a staircase of 1 to n blocks, rotating it 180°, and interlocking them into an n × (n + 1) rectangle.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-08.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="algebra" data-title="algebraic identity: (a + b)²" data-lesson-id="lesson-09">
+      <div class="card-top">
+        <span class="card-num">09</span>
+        <div class="card-badges">
+          <span class="cat-pill">Algebra</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-09">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Algebraic Identity: (a + b)²</h3>
+      <p class="card-sub">Geometric partitioning of a square into a², 2ab, and b²</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>(a + b)² = a² + 2ab + b²</strong>
+      </div>
+
+      <p class="card-mission">Visualize why the square of a sum (a+b)² is not simply a² + b², but contains two additional cross-term rectangles of area a × b.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-09.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="algebra" data-title="difference of squares: a² - b²" data-lesson-id="lesson-10">
+      <div class="card-top">
+        <span class="card-num">10</span>
+        <div class="card-badges">
+          <span class="cat-pill">Algebra</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-10">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Difference of Squares: a² - b²</h3>
+      <p class="card-sub">Dissecting an L-shape into a single rectangle of (a - b) × (a + b)</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>a² - b² = (a - b)(a + b)</strong>
+      </div>
+
+      <p class="card-mission">Prove that removing a small square b² from a large square a² leaves an L-shaped region that can be cut and reassembled into a single rectangle of width (a - b) and length (a + b).</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-10.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="calculus & limits" data-title="infinite geometric series: square tiling" data-lesson-id="lesson-11">
+      <div class="card-top">
+        <span class="card-num">11</span>
+        <div class="card-badges">
+          <span class="cat-pill">Calculus & Limits</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-11">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Infinite Geometric Series: Square Tiling</h3>
+      <p class="card-sub">Visualizing ½ + ¼ + ⅛ + ... = 1 and ¼ + 1/16 + ... = ⅓</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\sum_{k=1}^\infty (½)^k = 1,  \sum_{k=1}^\infty (¼)^k = ⅓</strong>
+      </div>
+
+      <p class="card-mission">Prove that an infinite sum of shrinking fractions converges to an exact finite value by partitioning a unit square into recursively halved or quartered geometric regions.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-11.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="pythagorean theorem: perigal’s dissection" data-lesson-id="lesson-12">
+      <div class="card-top">
+        <span class="card-num">12</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-12">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Pythagorean Theorem: Perigal’s Dissection</h3>
+      <p class="card-sub">Henry Perigal’s puzzle: 5 pieces that tile from b² and a² into c²</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>a² + b² = c²</strong>
+      </div>
+
+      <p class="card-mission">Witness Henry Perigal’s 1873 visual dissection: cutting the square on leg b through its center into 4 congruent quadrilaterals that surround square a² to tile square c² perfectly.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-12.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="volume of a pyramid: cube into 3 pyramids" data-lesson-id="lesson-13">
+      <div class="card-top">
+        <span class="card-num">13</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-13">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Volume of a Pyramid: Cube into 3 Pyramids</h3>
+      <p class="card-sub">Decomposing a cube of base B and height h into 3 identical pyramids</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>V_{pyramid} = ⅓ · Base · Height = ⅓ · B · h</strong>
+      </div>
+
+      <p class="card-mission">Prove that the volume of any pyramid is exactly one-third of the enclosing prism by showing that an ordinary cube can be cleaved into 3 congruent square pyramids meeting at a common apex.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-13.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="surface area of a sphere: 4 great circles" data-lesson-id="lesson-14">
+      <div class="card-top">
+        <span class="card-num">14</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-14">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Surface Area of a Sphere: 4 Great Circles</h3>
+      <p class="card-sub">Archimedes’ cylindrical projection and the 4πr² theorem</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Area_{sphere} = 4πr² = 4 × (\text{Great Circle Area})</strong>
+      </div>
+
+      <p class="card-mission">Unravel Archimedes’ most cherished discovery: the surface area of a sphere of radius r equals the lateral area of its circumscribing cylinder (2πr × 2r = 4πr²), exactly 4 great circles.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-14.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="volume of a sphere: archimedes’ balance" data-lesson-id="lesson-15">
+      <div class="card-top">
+        <span class="card-num">15</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-15">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Volume of a Sphere: Archimedes’ Balance</h3>
+      <p class="card-sub">Cross-section equivalence: Hemisphere + Cone = Cylinder at every height z</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>V_{sphere} = \frac{4}{3}πr³</strong>
+      </div>
+
+      <p class="card-mission">Reproduce Archimedes’ mechanical method: by slicing a hemisphere, an inverted cone, and a cylinder at any height z, prove the slice areas balance: A_{hemi} + A_{cone} = A_{cyl}.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-15.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="trigonometry" data-title="unit circle: tracing sine & cosine waves" data-lesson-id="lesson-16">
+      <div class="card-top">
+        <span class="card-num">16</span>
+        <div class="card-badges">
+          <span class="cat-pill">Trigonometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-16">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Unit Circle: Tracing Sine & Cosine Waves</h3>
+      <p class="card-sub">From circular rotation to sinusoidal wave propagation in real time</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\sin²(θ) + \cos²(θ) = 1</strong>
+      </div>
+
+      <p class="card-mission">Connect the geometric coordinates of a point rotating on a unit circle (cos θ, sin θ) with the continuous wave graphs of sine and cosine as angle θ sweeps from 0 to 2π.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-16.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="calculus & limits" data-title="derivative of sin(x) is cos(x)" data-lesson-id="lesson-17">
+      <div class="card-top">
+        <span class="card-num">17</span>
+        <div class="card-badges">
+          <span class="cat-pill">Calculus & Limits</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-17">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Derivative of sin(x) is cos(x)</h3>
+      <p class="card-sub">Geometric vector proof via the differential right triangle on the unit circle</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\frac{d}{dx}[\sin x] = \cos x</strong>
+      </div>
+
+      <p class="card-mission">Visually prove why the derivative of sin(x) is cos(x) by zooming into an infinitesimal arc length dx along the unit circle and analyzing the similar differential right triangle.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-17.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="inscribed angle theorem" data-lesson-id="lesson-18">
+      <div class="card-top">
+        <span class="card-num">18</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-18">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Inscribed Angle Theorem</h3>
+      <p class="card-sub">The angle subtended at the center is twice the angle subtended at the circumference</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>∠AOB = 2 · ∠APB</strong>
+      </div>
+
+      <p class="card-mission">Prove that an angle subtended by an arc at the center of a circle is twice the angle subtended by the same arc at any point on the circumference: θ_{center} = 2 · θ_{inscribed}.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-18.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="thales’ theorem: angle in a semicircle" data-lesson-id="lesson-19">
+      <div class="card-top">
+        <span class="card-num">19</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-19">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Thales’ Theorem: Angle in a Semicircle</h3>
+      <p class="card-sub">Why any triangle inscribed in a semicircle with diameter hypotenuse is a right triangle</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>∠ACB = 90°</strong>
+      </div>
+
+      <p class="card-mission">Prove Thales of Miletus’ fundamental theorem (c. 600 BCE): if points A, B, C lie on a circle where AB is a diameter, angle ∠ACB is always precisely 90°.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-19.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="number theory" data-title="golden ratio & fibonacci spiral" data-lesson-id="lesson-20">
+      <div class="card-top">
+        <span class="card-num">20</span>
+        <div class="card-badges">
+          <span class="cat-pill">Number Theory</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-20">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Golden Ratio & Fibonacci Spiral</h3>
+      <p class="card-sub">From nested Fibonacci squares (1, 1, 2, 3, 5, 8, 13...) to the logarithmic spiral</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>φ = \frac{1 + \sqrt{5}}{2} \approx 1.6180339887...</strong>
+      </div>
+
+      <p class="card-mission">Witness the emergence of the golden ratio φ by assembling squares whose side lengths follow the Fibonacci sequence and sweeping quarter-circle arcs to generate the golden logarithmic spiral.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-20.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="euler’s polyhedral formula: v - e + f = 2" data-lesson-id="lesson-21">
+      <div class="card-top">
+        <span class="card-num">21</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-21">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Euler’s Polyhedral Formula: V - E + F = 2</h3>
+      <p class="card-sub">Planar graph network reduction and the invariant Euler characteristic</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>V - E + F = 2</strong>
+      </div>
+
+      <p class="card-mission">Prove Leonhard Euler’s 1752 topological invariant for any convex polyhedron: the number of Vertices minus Edges plus Faces strictly equals 2.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-21.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="sum of interior angles of an n-gon" data-lesson-id="lesson-22">
+      <div class="card-top">
+        <span class="card-num">22</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-22">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Sum of Interior Angles of an n-gon</h3>
+      <p class="card-sub">Triangulation from a single vertex: (n - 2) × 180°</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Sum = (n - 2) · 180°</strong>
+      </div>
+
+      <p class="card-mission">Prove that the interior angles of any simple n-sided polygon always sum to (n - 2) × 180° by drawing all non-intersecting diagonals radiating from a single vertex.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-22.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="sum of exterior angles is always 360°" data-lesson-id="lesson-23">
+      <div class="card-top">
+        <span class="card-num">23</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#dcfce7; color:#15803d;">BEGINNER</span>
+          <span class="student-status-badge" data-badge-id="lesson-23">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Sum of Exterior Angles is Always 360°</h3>
+      <p class="card-sub">Shrinking polygon boundary to a point to form a full circle</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\sum \theta_{ext} = 360° = 2π \text{ rad}</strong>
+      </div>
+
+      <p class="card-mission">Prove that no matter how many sides a convex polygon has, its exterior turn angles always sum to exactly 360° by contracting the polygon towards its center.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-23.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="area of an ellipse: affine stretching" data-lesson-id="lesson-24">
+      <div class="card-top">
+        <span class="card-num">24</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-24">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Area of an Ellipse: Affine Stretching</h3>
+      <p class="card-sub">Scaling the unit circle of area π by semi-axes a and b to obtain πab</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>Area_{ellipse} = π · a · b</strong>
+      </div>
+
+      <p class="card-mission">Prove that the area of an ellipse with semi-major axis a and semi-minor axis b is πab by viewing the ellipse as an affine stretch of a unit circle.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-24.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="calculus & limits" data-title="derivative as tangent secant zoom" data-lesson-id="lesson-25">
+      <div class="card-top">
+        <span class="card-num">25</span>
+        <div class="card-badges">
+          <span class="cat-pill">Calculus & Limits</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-25">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Derivative as Tangent Secant Zoom</h3>
+      <p class="card-sub">Local linear approximation: zooming into a smooth curve reveals a straight line</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>f'(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}</strong>
+      </div>
+
+      <p class="card-mission">Visualize the foundational definition of the derivative: as the secant interval Δx shrinks toward 0, the secant line pivots smoothly into the tangent line, and microscopic zoom reveals a straight line.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-25.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="calculus & limits" data-title="fundamental theorem of calculus" data-lesson-id="lesson-26">
+      <div class="card-top">
+        <span class="card-num">26</span>
+        <div class="card-badges">
+          <span class="cat-pill">Calculus & Limits</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-26">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Fundamental Theorem of Calculus</h3>
+      <p class="card-sub">Connecting area accumulation A(x) with instantaneous rate of change A’(x) = f(x)</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\frac{d}{dx} \left[ \int_a^x f(t) dt \right] = f(x)</strong>
+      </div>
+
+      <p class="card-mission">Demystify calculus’ crown jewel: the rate at which accumulated area under a curve grows at x is exactly equal to the height of the curve f(x) at that point.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-26.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="cavalieri’s principle: 2d & 3d stacks" data-lesson-id="lesson-27">
+      <div class="card-top">
+        <span class="card-num">27</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-27">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Cavalieri’s Principle: 2D & 3D Stacks</h3>
+      <p class="card-sub">Slicing coins and decks of cards: shear deformation preserves total volume</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>V_1 = V_2 \iff A_1(z) = A_2(z) \; \forall z</strong>
+      </div>
+
+      <p class="card-mission">Experience Bonaventura Cavalieri’s 1635 principle: two solids of equal height have identical volume if every horizontal cross-section at height z has identical area.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-27.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="algebra" data-title="binomial cube: (a + b)³ expansion" data-lesson-id="lesson-28">
+      <div class="card-top">
+        <span class="card-num">28</span>
+        <div class="card-badges">
+          <span class="cat-pill">Algebra</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-28">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Binomial Cube: (a + b)³ Expansion</h3>
+      <p class="card-sub">Disassembling a 3D cube into 8 constituent prisms: a³ + 3a²b + 3ab² + b³</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>(a + b)³ = a³ + 3a²b + 3ab² + b³</strong>
+      </div>
+
+      <p class="card-mission">Deconstruct a solid 3D cube of edge length (a + b) into its 8 constituent sub-blocks: 1 large cube (a³), 3 flat plates (a²b), 3 tall pillars (ab²), and 1 small cube (b³).</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-28.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="algebra" data-title="am-gm inequality: geometric proof" data-lesson-id="lesson-29">
+      <div class="card-top">
+        <span class="card-num">29</span>
+        <div class="card-badges">
+          <span class="cat-pill">Algebra</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-29">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">AM-GM Inequality: Geometric Proof</h3>
+      <p class="card-sub">Arithmetic Mean ≥ Geometric Mean via right triangle altitude in a semicircle</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\frac{a + b}{2} \ge \sqrt{ab}</strong>
+      </div>
+
+      <p class="card-mission">Visually prove that for any positive numbers a and b, their arithmetic mean (a+b)/2 is greater than or equal to their geometric mean √(ab), with equality only when a = b.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-29.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="trigonometry" data-title="law of cosines: altitude dissection" data-lesson-id="lesson-30">
+      <div class="card-top">
+        <span class="card-num">30</span>
+        <div class="card-badges">
+          <span class="cat-pill">Trigonometry</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-30">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Law of Cosines: Altitude Dissection</h3>
+      <p class="card-sub">Generalizing Pythagoras to all triangles: c² = a² + b² - 2ab cos(C)</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>c² = a² + b² - 2ab\cos(C)</strong>
+      </div>
+
+      <p class="card-mission">Derive the Law of Cosines for any oblique triangle by dropping a perpendicular altitude and applying the Pythagorean theorem to the two resulting right triangles.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-30.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="geometry" data-title="parabola focus & directrix reflection" data-lesson-id="lesson-31">
+      <div class="card-top">
+        <span class="card-num">31</span>
+        <div class="card-badges">
+          <span class="cat-pill">Geometry</span>
+          <span class="diff-pill" style="background:#fef3c7; color:#b45309;">INTERMEDIATE</span>
+          <span class="student-status-badge" data-badge-id="lesson-31">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Parabola Focus & Directrix Reflection</h3>
+      <p class="card-sub">Why satellite dishes and solar concentrators focus parallel rays to a single point</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>d(P, F) = d(P, L), \quad \theta_{inc} = \theta_{ref}</strong>
+      </div>
+
+      <p class="card-mission">Explore the geometric definition and optical reflection property of a parabola: incoming parallel rays parallel to the axis of symmetry reflect off the tangent line directly into focus F.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-31.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    <article class="lesson-card" data-category="number theory" data-title="basel problem: inverse square series" data-lesson-id="lesson-32">
+      <div class="card-top">
+        <span class="card-num">32</span>
+        <div class="card-badges">
+          <span class="cat-pill">Number Theory</span>
+          <span class="diff-pill" style="background:#fee2e2; color:#b91c1c;">ADVANCED</span>
+          <span class="student-status-badge" data-badge-id="lesson-32">✦ New</span>
+        </div>
+      </div>
+
+      <h3 class="card-title">Basel Problem: Inverse Square Series</h3>
+      <p class="card-sub">Euler’s 1734 breakthrough: 1 + 1/4 + 1/9 + 1/16 + ... = π² / 6</p>
+
+      <div class="card-formula-pill">
+        <span>Formula:</span>
+        <strong>\sum_{n=1}^\infty \frac{1}{n²} = \frac{π²}{6} \approx 1.644934...</strong>
+      </div>
+
+      <p class="card-mission">Explore Leonhard Euler’s solution to the century-old Basel Problem: summing the reciprocals of all squared positive integers yields the unexpected appearance of π: π² / 6.</p>
+
+      <div class="card-bottom">
+        <span class="card-time">⏱ 8 minutes</span>
+        <a href="lesson-32.html" class="btn-open-lesson">
+          <span>OPEN LESSON</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+    
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      const searchInput = document.getElementById('searchInput');
+      const cards = document.querySelectorAll('.lesson-card');
+      const catBtns = document.querySelectorAll('.cat-btn');
+      let currentFilter = 'all';
+
+      // Read local mastery state and annotate cards
+      let masteredCount = 0;
+      let inProgressCount = 0;
+
+      cards.forEach(card => {
+        const lessonId = card.dataset.lessonId;
+        const badge = card.querySelector('.student-status-badge');
+        let state = { timeline: false, prediction: false, proof: false };
+        try {
+          const saved = localStorage.getItem('mu_lesson_' + lessonId);
+          if (saved) state = Object.assign(state, JSON.parse(saved));
+        } catch(e) {}
+
+        const score = (state.timeline ? 1 : 0) + (state.prediction ? 1 : 0) + (state.proof ? 1 : 0);
+        if (score === 3) {
+          card.dataset.status = 'mastered';
+          if (badge) {
+            badge.textContent = '★ Mastered';
+            badge.className = 'student-status-badge mastered';
+          }
+          masteredCount++;
+        } else if (score > 0) {
+          card.dataset.status = 'inprogress';
+          if (badge) {
+            badge.textContent = '⏳ ' + score + '/3 In Progress';
+            badge.className = 'student-status-badge inprogress';
+          }
+          inProgressCount++;
+        } else {
+          card.dataset.status = 'new';
+        }
+      });
+
+      // Update Dashboard Stats
+      const statMasteredCount = document.getElementById('statMasteredCount');
+      const statMasteredPercent = document.getElementById('statMasteredPercent');
+      const masteryProgressFill = document.getElementById('masteryProgressFill');
+      const masteredFilterCount = document.getElementById('masteredFilterCount');
+      const inProgressFilterCount = document.getElementById('inProgressFilterCount');
+
+      if (statMasteredCount) statMasteredCount.textContent = masteredCount;
+      const pct = Math.round((masteredCount / cards.length) * 100);
+      if (statMasteredPercent) statMasteredPercent.textContent = pct + '%';
+      if (masteryProgressFill) masteryProgressFill.style.width = pct + '%';
+      if (masteredFilterCount) masteredFilterCount.textContent = masteredCount;
+      if (inProgressFilterCount) inProgressFilterCount.textContent = inProgressCount;
+
+      function filterCards() {
+        const query = (searchInput.value || '').toLowerCase().trim();
+        cards.forEach(card => {
+          const cat = card.dataset.category || '';
+          const title = card.dataset.title || '';
+          const status = card.dataset.status || 'new';
+
+          let matchCat = false;
+          if (currentFilter === 'all') matchCat = true;
+          else if (currentFilter === 'mastered') matchCat = (status === 'mastered');
+          else if (currentFilter === 'inprogress') matchCat = (status === 'inprogress');
+          else matchCat = (cat === currentFilter);
+
+          const matchQuery = !query || title.includes(query) || cat.includes(query);
+          card.style.display = (matchCat && matchQuery) ? 'flex' : 'none';
+        });
+      }
+
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          filterCards();
+        });
+      });
+
+      searchInput.addEventListener('input', filterCards);
+
+      // Keyboard navigation for catalog
+      window.addEventListener('keydown', (e) => {
+        const isEditingText = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName);
+        if (e.key === '/' && !isEditingText) {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+          return;
+        }
+        if (e.key === 'Escape') {
+          if (searchInput === document.activeElement) {
+            searchInput.blur();
+          } else if (searchInput.value) {
+            searchInput.value = '';
+            filterCards();
+          }
+          return;
+        }
+        // Switch categories 1-8 if not in search input
+        if (!isEditingText && e.key >= '1' && e.key <= '8') {
+          const idx = parseInt(e.key, 10) - 1;
+          if (catBtns[idx]) {
+            e.preventDefault();
+            catBtns[idx].click();
+          }
+        }
+      });
+    })();
+  </script>
+
+  <!-- Universal Multilingual Voice Agent & Mathematical Intent Engine -->
+  <script>
+    // scripts/multilingual_agent_client.js
+// Universal Multilingual Voice Agent & Mathematical Language Engine for Maths Universe
+
+(function() {
+  'use strict';
+
+  // 1. Language Definitions
+  const SUPPORTED_LANGUAGES = [
+    { code: 'auto', label: 'Auto Detect', native: 'Auto Detect', flag: '🌐' },
+    { code: 'en-IN', label: 'English', native: 'English', flag: '🇬🇧' },
+    { code: 'hi-IN', label: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' },
+    { code: 'ta-IN', label: 'Tamil', native: 'தமிழ்', flag: '🇮🇳' },
+    { code: 'te-IN', label: 'Telugu', native: 'తెలుగు', flag: '🇮🇳' },
+    { code: 'ml-IN', label: 'Malayalam', native: 'മലയാളം', flag: '🇮🇳' },
+    { code: 'kn-IN', label: 'Kannada', native: 'ಕನ್ನಡ', flag: '🇮🇳' },
+    { code: 'bn-IN', label: 'Bengali', native: 'বাংলা', flag: '🇮🇳' },
+    { code: 'mr-IN', label: 'Marathi', native: 'मराठी', flag: '🇮🇳' },
+    { code: 'gu-IN', label: 'Gujarati', native: 'ગુજરાતી', flag: '🇮🇳' },
+    { code: 'pa-IN', label: 'Punjabi', native: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+    { code: 'ur-IN', label: 'Urdu', native: 'اردو', flag: '🇮🇳' },
+    { code: 'or-IN', label: 'Odia', native: 'ଓଡ଼ିଆ', flag: '🇮🇳' }
+  ];
+
+  // 2. Protected Mathematical Vocabulary
+  const MATH_TERMS = {
+    radius: {
+      'en': 'Radius', 'hi': 'Radius (त्रिज्या)', 'ta': 'Radius (ஆரம்)', 'te': 'Radius (వ్యాసార్థం)',
+      'ml': 'Radius (ആരം)', 'kn': 'Radius (ತ್ರಿಜ್ಯ)', 'bn': 'Radius (ব্যাসার্ধ)', 'mr': 'Radius (त्रिज्या)',
+      'gu': 'Radius (ત્રિજ્યા)', 'pa': 'Radius (ਅਰਧ-ਵਿਆਸ)', 'ur': 'Radius (رداس)', 'or': 'Radius (ବ୍ୟାସାର୍ଦ୍ଧ)'
+    },
+    diameter: {
+      'en': 'Diameter', 'hi': 'Diameter (व्यास)', 'ta': 'Diameter (விட்டம்)', 'te': 'Diameter (వ్యాసం)',
+      'ml': 'Diameter (വ്യാസം)', 'kn': 'Diameter (ವ್ಯಾಸ)', 'bn': 'Diameter (ব্যাস)', 'mr': 'Diameter (व्यास)',
+      'gu': 'Diameter (વ્યાસ)', 'pa': 'Diameter (ਵਿਆਸ)', 'ur': 'Diameter (قطر)', 'or': 'Diameter (ବ୍ୟାସ)'
+    },
+    area: {
+      'en': 'Area', 'hi': 'Area (क्षेत्रफल)', 'ta': 'Area (பரப்பளவு)', 'te': 'Area (వైశాల్యం)',
+      'ml': 'Area (വിസ്തീർണ്ണം)', 'kn': 'Area (ವಿಸ್ತೀರ್ಣ)', 'bn': 'Area (ক্ষেত্রফল)', 'mr': 'Area (क्षेत्रफळ)',
+      'gu': 'Area (ક્ષેત્રફળ)', 'pa': 'Area (ਖੇਤਰਫਲ)', 'ur': 'Area (رقبہ)', 'or': 'Area (କ୍ଷେତ୍ରଫଳ)'
+    },
+    perimeter: {
+      'en': 'Perimeter', 'hi': 'Perimeter (परिमाप)', 'ta': 'Perimeter (சுற்றளவு)', 'te': 'Perimeter (చుట్టుకొలత)',
+      'ml': 'Perimeter (ചുറ്റളവ്)', 'kn': 'Perimeter (ಸುತ್ತಳತೆ)', 'bn': 'Perimeter (পরিসীমা)', 'mr': 'Perimeter (परिमिती)',
+      'gu': 'Perimeter (પરિમિતિ)', 'pa': 'Perimeter (ਘੇਰਾ)', 'ur': 'Perimeter (محیط)', 'or': 'Perimeter (ପରିସୀମା)'
+    },
+    hypotenuse: {
+      'en': 'Hypotenuse', 'hi': 'Hypotenuse (कर्ण)', 'ta': 'Hypotenuse (கர்ணம்)', 'te': 'Hypotenuse (కర్ణం)',
+      'ml': 'Hypotenuse (കർണ്ണം)', 'kn': 'Hypotenuse (ಕರ್ಣ)', 'bn': 'Hypotenuse (অতিভুজ)', 'mr': 'Hypotenuse (कर्ण)',
+      'gu': 'Hypotenuse (કર્ણ)', 'pa': 'Hypotenuse (ਕਰਣ)', 'ur': 'Hypotenuse (وتر)', 'or': 'Hypotenuse (କର୍ଣ୍ଣ)'
+    },
+    triangle: {
+      'en': 'Triangle', 'hi': 'Triangle (त्रिभुज)', 'ta': 'Triangle (முக்கோணம்)', 'te': 'Triangle (త్రిభుజం)',
+      'ml': 'Triangle (ത്രികോണം)', 'kn': 'Triangle (ತ್ರಿಕೋನ)', 'bn': 'Triangle (ত্রিভুজ)', 'mr': 'Triangle (त्रिकोण)',
+      'gu': 'Triangle (ત્રિકોણ)', 'pa': 'Triangle (ਤਿਕੋਣ)', 'ur': 'Triangle (مثلث)', 'or': 'Triangle (ତ୍ରିଭୁଜ)'
+    },
+    angle: {
+      'en': 'Angle', 'hi': 'Angle (कोण)', 'ta': 'Angle (கோணம்)', 'te': 'Angle (కోణం)',
+      'ml': 'Angle (കോൺ)', 'kn': 'Angle (ಕೋನ)', 'bn': 'Angle (কোণ)', 'mr': 'Angle (कोण)',
+      'gu': 'Angle (ખૂણો)', 'pa': 'Angle (ਕੋਣ)', 'ur': 'Angle (زاویہ)', 'or': 'Angle (କୋଣ)'
+    },
+    equation: {
+      'en': 'Equation', 'hi': 'Equation (समीकरण)', 'ta': 'Equation (சமன்பாடு)', 'te': 'Equation (సమీకరణం)',
+      'ml': 'Equation (സമവാക്യം)', 'kn': 'Equation (ಸಮೀಕರಣ)', 'bn': 'Equation (সমীকরণ)', 'mr': 'Equation (समीकरण)',
+      'gu': 'Equation (સમીકરણ)', 'pa': 'Equation (ਸਮੀਕਰਨ)', 'ur': 'Equation (مساوات)', 'or': 'Equation (ସମୀକରଣ)'
+    },
+    proof: {
+      'en': 'Proof', 'hi': 'Proof (प्रमाण)', 'ta': 'Proof (நிரூபணம்)', 'te': 'Proof (నిరూపణ)',
+      'ml': 'Proof (തെളിവ്)', 'kn': 'Proof (ಸಾಬೀತು)', 'bn': 'Proof (প্রমাণ)', 'mr': 'Proof (सिद्धता)',
+      'gu': 'Proof (સાબિતી)', 'pa': 'Proof (ਸਬੂਤ)', 'ur': 'Proof (ثبوت)', 'or': 'Proof (ପ୍ରମାଣ)'
+    }
+  };
+
+  // 3. UI Dictionary for Complete Translation without Reload
+  const UI_TEXT = {
+    langLabel: {
+      'en': 'LANGUAGE', 'hi': 'भाषा', 'ta': 'மொழி', 'te': 'భాష',
+      'ml': 'ഭാഷ', 'kn': 'ಭಾಷೆ', 'bn': 'ভাষা', 'mr': 'भाषा',
+      'gu': 'ભાષા', 'pa': 'ਭਾਸ਼ਾ', 'ur': 'زبان', 'or': 'ଭାଷା'
+    },
+    askGuide: {
+      'en': '🎤 Ask Maths Guide', 'hi': '🎤 मैथ्स गाइड से पूछें', 'ta': '🎤 கணித வழிகாட்டி',
+      'te': '🎤 మ్యాథ్స్ గైడ్', 'ml': '🎤 മാത്സ് ഗൈഡ്', 'kn': '🎤 ಗಣಿತ ಮಾರ್ಗದರ್ಶಿ',
+      'bn': '🎤 ম্যাথস গাইড', 'mr': '🎤 मॅथ्स गाईड', 'gu': '🎤 મેથ્સ ગાઈડ',
+      'pa': '🎤 ਗਣਿਤ ਗਾਈਡ', 'ur': '🎤 ریاضی گائیڈ', 'or': '🎤 ଗଣିତ ଗାଇଡ୍'
+    },
+    studentNotes: {
+      'en': '📖 Student Notes', 'hi': '📖 छात्र नोट्स', 'ta': '📖 மாணவர் குறிப்புகள்',
+      'te': '📖 విద్యార్థి నోట్స్', 'ml': '📖 വിദ്യാർത്ഥി കുറിപ്പുകൾ', 'kn': '📖 ವಿದ್ಯಾರ್ಥಿ ಟಿಪ್ಪಣಿಗಳು',
+      'bn': '📖 ছাত্র নোট', 'mr': '📖 विद्यार्थी नोट्स', 'gu': '📖 વિદ્યાર્થી નોંધ',
+      'pa': '📖 ਵਿਦਿਆਰਥੀ ਨੋਟਸ', 'ur': '📖 طالب علم نوٹس', 'or': '📖 ଛାତ୍ର ଟିପ୍ପଣୀ'
+    },
+    help: {
+      'en': '? Help', 'hi': '? सहायता', 'ta': '? உதவி', 'te': '? సహాయం',
+      'ml': '? സഹായം', 'kn': '? ಸಹಾಯ', 'bn': '? সাহায্য', 'mr': '? मदत',
+      'gu': '? મદદ', 'pa': '? ਮਦਦ', 'ur': '? مدد', 'or': '? ସାହାଯ୍ୟ'
+    },
+    mastered: {
+      'en': 'Mastered', 'hi': 'प्रवीण', 'ta': 'தேர்ச்சி', 'te': 'ప్రావీణ్యం',
+      'ml': 'പ്രാവീണ്യം', 'kn': 'ಪರಿಣಿತಿ', 'bn': 'পারদর্শী', 'mr': 'पारंगत',
+      'gu': 'પ્રવીણ', 'pa': 'ਮਾਹਿਰ', 'ur': 'ماہر', 'or': 'ଦକ୍ଷ'
+    },
+    mission: {
+      'en': 'MISSION', 'hi': 'मिशन', 'ta': 'பணி', 'te': 'లక్ష్యం',
+      'ml': 'ദൗത്യം', 'kn': 'ಗುರಿ', 'bn': 'মিশন', 'mr': 'ध्येय',
+      'gu': 'મિશન', 'pa': 'ਮਿਸ਼ਨ', 'ur': 'مشن', 'or': 'ଲକ୍ଷ୍ୟ'
+    },
+    analogy: {
+      'en': '💡 ANALOGY:', 'hi': '💡 सादृश्य:', 'ta': '💡 ஒப்புமை:', 'te': '💡 సారూప్యత:',
+      'ml': '💡 സാദൃശ്യം:', 'kn': '💡 ಸಾದೃಶ್ಯ:', 'bn': '💡 সাদৃশ্য:', 'mr': '💡 सादृश्य:',
+      'gu': '💡 ઉપમા:', 'pa': '💡 ਸਮਾਨਤਾ:', 'ur': '💡 تشبیہ:', 'or': '💡 ଉପମା:'
+    },
+    teacherVoice: {
+      'en': 'TEACHER VOICE', 'hi': 'शिक्षक की आवाज़', 'ta': 'ஆசிரியர் குரல்', 'te': 'ఉపాధ్యాయుడి స్వరం',
+      'ml': 'അധ്യാപകന്റെ ശബ്ദം', 'kn': 'ಶಿಕ್ಷಕರ ಧ್ವನಿ', 'bn': 'শিক্ষকের কণ্ঠ', 'mr': 'शिक्षकांचा आवाज',
+      'gu': 'શિક્ષકનો અવાજ', 'pa': 'ਅਧਿਆਪਕ ਦੀ ਆਵਾਜ਼', 'ur': 'استاد کی آواز', 'or': 'ଶିକ୍ଷକଙ୍କ ସ୍ୱର'
+    },
+    listen: {
+      'en': '🔊 Listen', 'hi': '🔊 सुनें', 'ta': '🔊 கேளுங்கள்', 'te': '🔊 వినండి',
+      'ml': '🔊 കേൾക്കൂ', 'kn': '🔊 ಕೇಳಿ', 'bn': '🔊 শুনুন', 'mr': '🔊 ऐका',
+      'gu': '🔊 સાંભળો', 'pa': '🔊 ਸੁਣੋ', 'ur': '🔊 سنیں', 'or': '🔊 ଶୁଣନ୍ତୁ'
+    },
+    dragHint: {
+      'en': '↔ Drag to Scrub', 'hi': '↔ आगे-पीछे करने के लिए खींचें', 'ta': '↔ நகர்த்த இழுக்கவும்',
+      'te': '↔ స్క్రబ్ చేయడానికి లాగండి', 'ml': '↔ സ്ക്രബ് ചെയ്യാൻ വലിക്കുക', 'kn': '↔ ಎಳೆಯಿರಿ',
+      'bn': '↔ স্ক্রাব করতে টানুন', 'mr': '↔ ड्रॅग करा', 'gu': '↔ ખેંચો',
+      'pa': '↔ ਸਕ੍ਰੌਲ ਕਰਨ ਲਈ ਖਿੱਚੋ', 'ur': '↔ آگے پیچھے کریں', 'or': '↔ ସ୍କ୍ରବ୍ କରିବାକୁ ଟାଣନ୍ତୁ'
+    },
+    play: {
+      'en': 'Play', 'hi': 'चलाएं', 'ta': 'இயக்கு', 'te': 'ప్లే',
+      'ml': 'പ്ലേ', 'kn': 'ಪ್ಲೇ', 'bn': 'চালাও', 'mr': 'सुरू करा',
+      'gu': 'ચલાવો', 'pa': 'ਚਲਾਓ', 'ur': 'چلائیں', 'or': 'ଚଲାନ୍ତୁ'
+    },
+    pause: {
+      'en': 'Pause', 'hi': 'रोकें', 'ta': 'நிறுத்து', 'te': 'పాజ్',
+      'ml': 'നിർത്തൂ', 'kn': 'ವಿರಾಮ', 'bn': 'থামাও', 'mr': 'थांबवा',
+      'gu': 'અટકાવો', 'pa': 'ਰੋਕੋ', 'ur': 'روکیں', 'or': 'ଅଟକାନ୍ତୁ'
+    },
+    loop: {
+      'en': '🔁 Loop', 'hi': '🔁 लूप', 'ta': '🔁 சுழற்சி', 'te': '🔁 లూప్',
+      'ml': '🔁 ലൂപ്പ്', 'kn': '🔁 ಲೂಪ್', 'bn': '🔁 লুপ', 'mr': '🔁 लूप',
+      'gu': '🔁 લૂપ', 'pa': '🔁 ਲੂਪ', 'ur': '🔁 لوپ', 'or': '🔁 ଲୁପ୍'
+    },
+    ghost: {
+      'en': 'Ghost outlines', 'hi': 'काल्पनिक रूपरेखा', 'ta': 'நிழல் கோடுகள்', 'te': 'రూపరేఖలు',
+      'ml': 'ഔട്ട്ലൈനുകൾ', 'kn': 'ರೂಪರೇಖೆಗಳು', 'bn': 'রূপরেখা', 'mr': 'बाह्यरेखा',
+      'gu': 'બાહ્યરેખા', 'pa': 'ਰੂਪਰੇਖਾ', 'ur': 'خاکہ', 'or': 'ରୂପରେଖା'
+    },
+    snap: {
+      'en': 'Snap guides', 'hi': 'स्नैप गाइड', 'ta': 'சீரமைப்பு வழிகாட்டிகள்', 'te': 'స్నాప్ గైడ్లు',
+      'ml': 'സ്നാപ്പ് ഗൈഡുകൾ', 'kn': 'ಸ್ನ್ಯಾಪ್ ಮಾರ್ಗದರ್ಶಿಗಳು', 'bn': 'স্ন্যাপ গাইড', 'mr': 'स्नॅप मार्गदर्शक',
+      'gu': 'સ્નેપ ગાઇડ', 'pa': 'ਸਨੈਪ ਗਾਈਡ', 'ur': 'سنیپ گائیڈ', 'or': 'ସ୍ନାପ୍ ଗାଇଡ୍'
+    },
+    areaLock: {
+      'en': 'Equal-area lock', 'hi': 'समान क्षेत्रफल लॉक', 'ta': 'சம பரப்பு பூட்டு', 'te': 'సమాన వైశాల్య లాక్',
+      'ml': 'തുല്യ വിസ്തീർണ്ണ ലോക്ക്', 'kn': 'ಸಮಾನ ವಿಸ್ತೀರ್ಣ ಲಾಕ್', 'bn': 'সমান ক্ষেত্রফল লক', 'mr': 'समान क्षेत्रफळ लॉक',
+      'gu': 'સમાન ક્ષેત્રફળ લૉક', 'pa': 'ਬਰਾਬਰ ਖੇਤਰਫਲ ਲਾਕ', 'ur': 'برابر رقبہ لاک', 'or': 'ସମାନ କ୍ଷେତ୍ରଫଳ ଲକ୍'
+    },
+    inspector: {
+      'en': '🔬 X-Ray', 'hi': '🔬 एक्स-रे', 'ta': '🔬 எக்ஸ்ரே', 'te': '🔬 ఎక్స్-రే',
+      'ml': '🔬 എക്സ്-റേ', 'kn': '🔬 ಎಕ್ಸ್-ರೇ', 'bn': '🔬 এক্স-রে', 'mr': '🔬 क्ष-किरण',
+      'gu': '🔬 એક્સ-રે', 'pa': '🔬 ਐਕਸ-ਰੇ', 'ur': '🔬 ایکس رے', 'or': '🔬 ଏକ୍ସ-ରେ'
+    },
+    reset: {
+      'en': '↺ Reset', 'hi': '↺ रीसेट', 'ta': '↺ மீட்டமை', 'te': '↺ రీసెట్',
+      'ml': '↺ റീസെറ്റ്', 'kn': '↺ ಮರುಹೊಂದಿಸಿ', 'bn': '↺ রিসেট', 'mr': '↺ रीसेट',
+      'gu': '↺ રીસેટ', 'pa': '↺ ਰੀਸੈਟ', 'ur': '↺ دوبارہ ترتيب', 'or': '↺ ରିସେଟ୍'
+    },
+    whyItWorks: {
+      'en': 'Why It Works', 'hi': 'यह कैसे काम करता है?', 'ta': 'இது எவ்வாறு செயல்படுகிறது?',
+      'te': 'ఇది ఎందుకు పనిచేస్తుంది?', 'ml': 'ഇത് എങ്ങനെ പ്രവർത്തിക്കുന്നു?', 'kn': 'ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ?',
+      'bn': 'এটি কীভাবে কাজ করে?', 'mr': 'हे कसे कार्य करते?', 'gu': 'આ કેવી રીતે કાર્ય કરે છે?',
+      'pa': 'ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ?', 'ur': 'یہ کیسے کام کرتا ہے؟', 'or': 'ଏହା କିପରି କାମ କରେ?'
+    },
+    prediction: {
+      'en': 'PREDICTION CHALLENGE', 'hi': 'भविष्यवाणी चुनौती', 'ta': 'கணிப்பு சவால்', 'te': 'అంచనా సవాలు',
+      'ml': 'പ്രവചന വെല്ലുവിളി', 'kn': 'ಮುನ್ಸೂಚನೆ ಸವಾಲು', 'bn': 'ভবিষ্যদ্বাণী চ্যালেঞ্জ', 'mr': 'अंदाज आव्हान',
+      'gu': 'અનુમાન પડકાર', 'pa': 'ਭਵਿੱਖਬਾਣੀ ਚੁਣੌਤੀ', 'ur': 'پیشین گوئی چیلنج', 'or': 'ଭବିଷ୍ୟବାଣୀ ଚ୍ୟାଲେଞ୍ଜ'
+    },
+    wrongFeedback: {
+      'en': "Almost! Let's look at this part again.",
+      'hi': 'लगभग! आइए इस हिस्से को फिर से देखें।',
+      'ta': 'கிட்டத்தட்ட சரி! இந்த பகுதியை மீண்டும் பார்ப்போம்.',
+      'te': 'దాదాపు దగ్గరగా వచ్చారు! ఈ భాగాన్ని మళ్ళీ చూద్దాం.',
+      'ml': 'ഏതാണ്ട് ശരിയായി! ഈ ഭാഗം വീണ്ടും നോക്കാം.',
+      'kn': 'ಬಹುತೇಕ ಸರಿ! ಈ ಭಾಗವನ್ನು ಮತ್ತೆ ನೋಡೋಣ.',
+      'bn': 'প্রায় কাছাকাছি! আসুন এই অংশটি আবার দেখি।',
+      'mr': 'जवळजवळ बरोबर! चला हा भाग पुन्हा पाहूया.',
+      'gu': 'લગભગ સાચું! ચાલો આ ભાગ ફરી જોઈએ.',
+      'pa': 'ਲਗਭਗ ਨੇੜੇ! ਆਓ ਇਸ ਹਿੱਸੇ ਨੂੰ ਦੁਬਾਰਾ ਵੇਖੀਏ।',
+      'ur': 'تقریباً درست! آئیے اس حصے کو دوبارہ دیکھتے ہیں۔',
+      'or': 'ପ୍ରାୟ ପାଖାପାଖି! ଆସନ୍ତୁ ଏହି ଅଂଶକୁ ପୁଣି ଥରେ ଦେଖିବା।'
+    },
+    correctFeedback: {
+      'en': 'Correct! Outstanding discovery! ⭐',
+      'hi': 'बिलकुल सही! शानदार खोज! ⭐',
+      'ta': 'சரி! அருமையான கண்டுபிடிப்பு! ⭐',
+      'te': 'సరియైనది! అద్భుతమైన ఆవిష్కరణ! ⭐',
+      'ml': 'ശരിയാണ്! മികച്ച കണ്ടെത്തൽ! ⭐',
+      'kn': 'ಸರಿ! ಅದ್ಭುತ ಆವಿಷ್ಕಾರ! ⭐',
+      'bn': 'সঠিক! দারুণ আবিষ্কার! ⭐',
+      'mr': 'बरोबर! उत्तम शोध! ⭐',
+      'gu': 'સાચું! અદ્ભુત શોધ! ⭐',
+      'pa': 'ਸਹੀ! ਸ਼ਾਨਦਾਰ ਖੋਜ! ⭐',
+      'ur': 'درست! شاندار دریافت! ⭐',
+      'or': 'ସଠିକ୍! ଚମତ୍କାର ଆବିଷ୍କାର! ⭐'
+    },
+    allStagesCompleted: {
+      'en': 'All 3 Stages Completed! ✨',
+      'hi': 'सभी 3 चरण पूर्ण! ✨',
+      'ta': 'அனைத்து 3 நிலைகளும் நிறைவடைந்தன! ✨',
+      'te': 'అన్ని 3 దశలు పూర్తయ్యాయి! ✨',
+      'ml': 'എല്ലാ 3 ഘട്ടങ്ങളും പൂർത്തിയായി! ✨',
+      'kn': 'ಎಲ್ಲಾ 3 ಹಂತಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ! ✨',
+      'bn': 'সব ৩টি ধাপ সম্পন্ন! ✨',
+      'mr': 'सर्व ३ पायऱ्या पूर्ण! ✨',
+      'gu': 'બધા ૩ તબક્કા પૂર્ણ! ✨',
+      'pa': 'ਸਾਰੇ 3 ਪੜਾਅ ਮੁਕੰਮਲ! ✨',
+      'ur': 'تمام 3 مراحل مکمل! ✨',
+      'or': 'ସମସ୍ତ ୩ ପର୍ଯ୍ୟାୟ ସମାପ୍ତ! ✨'
+    },
+    voiceUnavailable: {
+      'en': 'Voice input is unavailable in this browser. You can type your question.',
+      'hi': 'इस ब्राउज़र में वॉयस इनपुट उपलब्ध नहीं है। आप अपना प्रश्न टाइप कर सकते हैं।',
+      'ta': 'இந்த உலாவியில் குரல் உள்ளீடு கிடைக்கவில்லை. உங்கள் கேள்வியை தட்டச்சு செய்யலாம்.',
+      'te': 'ఈ బ్రౌజర్‌లో వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు. మీరు మీ ప్రశ్నను టైప్ చేయవచ్చు.',
+      'ml': 'ഈ ബ്രൗസറിൽ വോയ്‌സ് ഇൻപുട്ട് ലഭ്യമല്ല. നിങ്ങൾക്ക് ചോദ്യം ടൈപ്പ് ചെയ്യാം.',
+      'kn': 'ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಇನ್‌ಪುಟ್ ಲಭ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಬಹುದು.',
+      'bn': 'এই ব্রাউজারে ভয়েস ইনপুট অনুপলব্ধ। আপনি প্রশ্ন টাইপ করতে পারেন।',
+      'mr': 'या ब्राउझरमध्ये व्हॉइस इनपुट उपलब्ध नाही. आपण प्रश्न टाइप करू शकता.',
+      'gu': 'આ બ્રાઉઝરમાં વૉઇસ ઇનપુટ ઉપલબ્ધ નથી. તમે પ્રશ્ન ટાઇપ કરી શકો છો.',
+      'pa': 'ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਵੌਇਸ ਇਨਪੁਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਤੁਸੀਂ ਸਵਾਲ ਟਾਈਪ ਕਰ ਸਕਦੇ ਹੋ।',
+      'ur': 'اس براؤزر میں صوتی ان پٹ دستیاب نہیں ہے۔ آپ اپنا سوال ٹائپ کر سکتے ہیں۔',
+      'or': 'ଏହି ବ୍ରାଉଜରରେ ଭଏସ୍ ଇନପୁଟ୍ ଉପଲବ୍ଧ ନାହିଁ। ଆପଣ ନିଜ ପ୍ରଶ୍ନ ଟାଇପ୍ କରିପାରିବେ।'
+    }
+  };
+
+  // Helper to extract language base
+  function getLangBase(code) {
+    if (!code || code === 'auto') return 'en';
+    return code.split('-')[0] || 'en';
+  }
+
+  // 4. Master Language & Agent Manager
+  class MathsLanguageManager {
+    constructor() {
+      this.storageKey = 'mathsUniverseLanguage';
+      this.rateKey = 'mathsUniverseSpeechRate';
+      this.levelKey = 'mathsUniverseExplanationLevel';
+      this.modeKey = 'mathsUniverseResponseMode';
+
+      this.currentLanguage = localStorage.getItem(this.storageKey) || 'auto';
+      this.resolvedLanguage = this.resolveLanguage(this.currentLanguage);
+      this.speechRate = localStorage.getItem(this.rateKey) || 'normal'; // 'slow', 'normal', 'fast'
+      this.explanationLevel = localStorage.getItem(this.levelKey) || 'simple'; // 'simple', 'step', 'detailed', 'example'
+      this.responseMode = localStorage.getItem(this.modeKey) || 'visual_voice_text';
+
+      this.isListening = false;
+      this.recognition = null;
+      this.lastSpokenText = '';
+      this.lastSpokenLang = 'en-IN';
+
+      this.initSpeech();
+    }
+
+    resolveLanguage(langCode) {
+      if (!langCode || langCode === 'auto') {
+        // Try browser language or default to en-IN
+        const navLang = (navigator.language || 'en-IN').toLowerCase();
+        if (navLang.startsWith('ta')) return 'ta-IN';
+        if (navLang.startsWith('hi')) return 'hi-IN';
+        if (navLang.startsWith('te')) return 'te-IN';
+        if (navLang.startsWith('ml')) return 'ml-IN';
+        if (navLang.startsWith('kn')) return 'kn-IN';
+        if (navLang.startsWith('bn')) return 'bn-IN';
+        if (navLang.startsWith('mr')) return 'mr-IN';
+        if (navLang.startsWith('gu')) return 'gu-IN';
+        if (navLang.startsWith('pa')) return 'pa-IN';
+        if (navLang.startsWith('ur')) return 'ur-IN';
+        if (navLang.startsWith('or')) return 'or-IN';
+        return 'en-IN';
+      }
+      return langCode;
+    }
+
+    setLanguage(langCode, skipSave = false) {
+      this.currentLanguage = langCode;
+      this.resolvedLanguage = this.resolveLanguage(langCode);
+      if (!skipSave) {
+        localStorage.setItem(this.storageKey, langCode);
+      }
+
+      if (this.recognition) {
+        this.recognition.lang = this.resolvedLanguage;
+      }
+
+      // Update UI across page
+      this.updateAllUI(this.resolvedLanguage);
+
+      // Trigger event
+      window.dispatchEvent(new CustomEvent('mathsLanguageChanged', {
+        detail: { language: this.currentLanguage, resolved: this.resolvedLanguage }
+      }));
+
+      return this.resolvedLanguage;
+    }
+
+    setSpeechRate(rate) {
+      this.speechRate = rate;
+      localStorage.setItem(this.rateKey, rate);
+    }
+
+    setExplanationLevel(level) {
+      this.explanationLevel = level;
+      localStorage.setItem(this.levelKey, level);
+    }
+
+    setResponseMode(mode) {
+      this.responseMode = mode;
+      localStorage.setItem(this.modeKey, mode);
+    }
+
+    getText(key, lang = null) {
+      const target = lang || this.resolvedLanguage;
+      const base = getLangBase(target);
+      const dict = UI_TEXT[key];
+      if (!dict) return '';
+      return dict[base] || dict['en'] || '';
+    }
+
+    initSpeech() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) {
+        try {
+          this.recognition = new SpeechRec();
+          this.recognition.continuous = false;
+          this.recognition.interimResults = false;
+          this.recognition.maxAlternatives = 1;
+          this.recognition.lang = this.resolvedLanguage;
+
+          this.recognition.onstart = () => {
+            this.isListening = true;
+            this.updateGuideMicUI(true);
+          };
+
+          this.recognition.onend = () => {
+            this.isListening = false;
+            this.updateGuideMicUI(false);
+          };
+
+          this.recognition.onerror = (e) => {
+            this.isListening = false;
+            this.updateGuideMicUI(false);
+            console.warn('Speech error:', e.error);
+          };
+
+          this.recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript) {
+              this.handleStudentInput(transcript, true);
+            }
+          };
+        } catch (e) {
+          console.warn('Recognition setup failed:', e);
+        }
+      }
+    }
+
+    getBestVoice(langCode) {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return null;
+
+      const base = getLangBase(langCode);
+      const code = langCode.toLowerCase().replace('_', '-');
+
+      // 1. Exact match
+      let match = voices.find(v => v.lang.toLowerCase().replace('_', '-') === code);
+      if (match) return match;
+
+      // 2. Base match
+      match = voices.find(v => v.lang.toLowerCase().startsWith(base));
+      if (match) return match;
+
+      // 3. Name contains language name
+      const langObj = SUPPORTED_LANGUAGES.find(l => l.code === langCode);
+      if (langObj) {
+        match = voices.find(v => v.name.toLowerCase().includes(langObj.label.toLowerCase()) || v.name.includes(langObj.native));
+        if (match) return match;
+      }
+
+      // Default fallback
+      return voices.find(v => v.lang.startsWith('en')) || voices[0];
+    }
+
+    speak(text, lang = null, onEnd = null) {
+      if (!('speechSynthesis' in window) || !text) return;
+      window.speechSynthesis.cancel();
+
+      const targetLang = lang || this.resolvedLanguage;
+      this.lastSpokenText = text;
+      this.lastSpokenLang = targetLang;
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      let rate = 1.0;
+      if (this.speechRate === 'slow') rate = 0.8;
+      else if (this.speechRate === 'fast') rate = 1.25;
+
+      utterance.rate = rate;
+      utterance.pitch = 1.05; // Friendly, warm child-appropriate tone
+
+      const voice = this.getBestVoice(targetLang);
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+      } else {
+        utterance.lang = targetLang;
+      }
+
+      if (onEnd) {
+        utterance.onend = onEnd;
+        utterance.onerror = onEnd;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    stopSpeaking() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    repeatLast() {
+      if (this.lastSpokenText) {
+        this.speak(this.lastSpokenText, this.lastSpokenLang);
+      }
+    }
+
+    // NLU Intent Parser
+    detectLanguage(text) {
+      if (!text) return 'en-IN';
+      const str = text.trim();
+      if (/[\u0B80-\u0BFF]/.test(str)) return 'ta-IN'; // Tamil
+      if (/[\u0C00-\u0C7F]/.test(str)) return 'te-IN'; // Telugu
+      if (/[\u0D00-\u0D7F]/.test(str)) return 'ml-IN'; // Malayalam
+      if (/[\u0C80-\u0CFF]/.test(str)) return 'kn-IN'; // Kannada
+      if (/[\u0980-\u09FF]/.test(str)) return 'bn-IN'; // Bengali
+      if (/[\u0A80-\u0AFF]/.test(str)) return 'gu-IN'; // Gujarati
+      if (/[\u0A00-\u0A7F]/.test(str)) return 'pa-IN'; // Punjabi
+      if (/[\u0600-\u06FF]/.test(str)) return 'ur-IN'; // Urdu
+      if (/[\u0B00-\u0B7F]/.test(str)) return 'or-IN'; // Odia
+      if (/[\u0900-\u097F]/.test(str)) {
+        if (/सांगा|आहे|करा|काय|धडा/.test(str)) return 'mr-IN';
+        return 'hi-IN';
+      }
+      const lower = str.toLowerCase();
+      if (/pannu|solli|irukku|puriy|enna|inga|adutha|konjam/.test(lower)) return 'ta-IN';
+      if (/karo|batao|kyu|kaise|samjhao|bada|chhota|agla/.test(lower)) return 'hi-IN';
+      if (/cheppu|enti|ela|chudandi|cheyyi/.test(lower)) return 'te-IN';
+      return 'en-IN';
+    }
+
+    parseIntent(query) {
+      if (!query) return { intent: 'EXPLAIN_CONCEPT', lang: this.resolvedLanguage, query: '' };
+      const q = query.trim().toLowerCase();
+      let lang = this.currentLanguage === 'auto' ? this.detectLanguage(query) : this.resolvedLanguage;
+
+      // Speed slow
+      if (/slower|slow|slow down|மெதுவாக|வேகம் குறை|धीरे|धीमी|నెమ్మదిగా|പതുക്കെ|ನಿಧಾನವಾಗಿ|আস্তে|हळू|ધીમે|ਹੌਲੀ|آہستہ|ଧୀରେ/.test(q)) {
+        return { intent: 'CHANGE_SPEED_SLOW', lang, query };
+      }
+      // Speed fast
+      if (/faster|fast|speed up|வேகமாக|तेज़|जल्दी|వేగంగా|വേഗത്തിൽ|ವೇಗವಾಗಿ|দ্রুত|जलद|ઝડપી|ਤੇਜ਼|تیز|ଦ୍ରୁତ/.test(q)) {
+        return { intent: 'CHANGE_SPEED_FAST', lang, query };
+      }
+      // Why
+      if (/why|reason|ஏன்|எதனால்|காரணம்|क्यों|वजह|ఎందుకు|കారణം|എന്തുകൊണ്ട്|ಏಕೆ|యాకే|কেন|का|શા માટે|ਕੇਮ|ਕਿਉਂ|کیوں|କାହିଁକି/.test(q)) {
+        return { intent: 'WHY_CONCEPT', lang, query };
+      }
+      // Formula
+      if (/formula|equation|சூத்திரம்|சமன்பாடு|सूत्र|फॉर्मूला|समीकरण|సూత్రం|സമവാക്യം|ಸೂತ್ರ|সমীকরণ|સૂત્ર|ਸੂਤਰ|فارمولا|ସୂତ୍ର/.test(q)) {
+        return { intent: 'SHOW_FORMULA', lang, query };
+      }
+      // Hint
+      if (/hint|clue|help|ஹிண்ட்|குறிப்பு|உதவி|हिंट|इशारा|मदद|సూచన|സൂചന|ಸುಳಿವು|ইঙ্গিত|संकेत|ਸੰਕੇਤ|اشارہ|ସୂଚନା/.test(q)) {
+        return { intent: 'GIVE_HINT', lang, query };
+      }
+      // Challenge
+      if (/challenge|predict|quiz|test|சவால்|கணிப்பு|चुनौती|अनुमान|సవాలు|വെല്ലുവിളി|ಸವಾಲು|চ্যালেঞ্জ|आव्हान|પડકાર|ਚੁਣੌਤੀ|چیلنج|ଚ୍ୟାଲେଞ୍ଜ/.test(q)) {
+        return { intent: 'START_CHALLENGE', lang, query };
+      }
+      // Play
+      if (/play|start|run|continue|resume|இயக்கு|தொடங்கு|चलाओ|शुरू|ప్లే|തുടങ്ങൂ|ಪ್ರಾರಂಭಿಸಿ|চালাও|सुरू करा|શરૂ કરો|ਚਲਾਓ|چلائیں|ଚଲାନ୍ତୁ/.test(q)) {
+        return { intent: 'PLAY_RESUME', lang, query };
+      }
+      // Pause
+      if (/pause|stop|freeze|நிறுத்து|பாஸ்|रोको|पॉज़|ఆపు|നിർത്തൂ|ನಿಲ್ಲಿಸಿ|থামাও|थांबवा|રોકો|ਰੋਕੋ|روکیں|ଅଟକାନ୍ତୁ/.test(q)) {
+        return { intent: 'PAUSE_STOP', lang, query };
+      }
+      // Reset
+      if (/reset|restart|start over|மீட்டமை|மறுபடி அமை|रीसेट|फिर से शुरू|రీసెట్|റീസെറ്റ്|ಮರುಹೊಂದಿಸಿ|রিসেট|રીસેਟ|ਰੀਸੈਟ|دوبارہ ترتیب|ରିସେଟ୍/.test(q)) {
+        return { intent: 'RESET_VIEW', lang, query };
+      }
+      // Step Forward
+      if (/next step|step forward|forward|அடுத்த படி|முன்னேறு|अगला कदम|आगे बढ़ो|తదుపరి అడుగు|ಮುಂದಿನ ಹೆಜ್ಜೆ|পরের ধাপ|पुढील पायरी|આગળનું પગલું|ਅਗਲਾ ਕਦਮ|اگلا قدم|ପରବର୍ତ୍ତୀ ପଦକ୍ଷେପ/.test(q)) {
+        return { intent: 'STEP_FORWARD', lang, query };
+      }
+      // Step Back
+      if (/prev step|previous step|step back|backward|முந்தைய படி|பின்னே போ|पिछला कदम|पीछे जाओ|మునుపటి అడుగు|ಹಿಂದಿನ ಹೆಜ್ಜೆ|আগের ধাপ|मागील पायरी|પાછળનું પગલું|ਪਿਛਲਾ ਕਦਮ|پچھلا قدم|ପୂର୍ବ ପଦକ୍ଷେପ/.test(q)) {
+        return { intent: 'STEP_BACKWARD', lang, query };
+      }
+      // Next Lesson
+      if (/next lesson|next proof|அடுத்த பாடம்|अगला पाठ|తదుపరి పాఠం|അടുത്ത പാഠം|ಮುಂದಿನ ಪಾಠ|পরের পাঠ|पुढील धडा|આગળનો પાઠ|ਅਗਲਾ ਪਾਠ|اگلا سبق|ପରବର୍ତ୍ତୀ ପାଠ/.test(q)) {
+        return { intent: 'NEXT_LESSON', lang, query };
+      }
+      // Prev Lesson
+      if (/prev lesson|previous lesson|முந்தைய பாடம்|पिछला पाठ|మునుపటి పాఠం|മുമ്പത്തെ പാഠം|ಹಿಂದಿನ ಪಾಠ|আগের পাঠ|मागील धडा|પાછળનો પાઠ|ਪਿਛਲਾ ਪਾਠ|پچھلا سبق|ପୂର୍ବ ପାଠ/.test(q)) {
+        return { intent: 'PREV_LESSON', lang, query };
+      }
+      // Repeat
+      if (/repeat|again|say again|மறுபடியும்|மீண்டும்|फिर से বলো|दोबारा|మళ్ళీ|ഒരിക്കൽ കൂടി|ಮತ್ತೊಮ್ಮೆ|আবার বলো|पुन्हा सांगा|ફરીથી|ਦੁਬਾਰਾ|دوبارہ|ପୁଣି/.test(q)) {
+        return { intent: 'REPEAT', lang, query };
+      }
+      // Increase variable
+      if (/make it bigger|bigger|increase|larger|பெரிதாக்கு|அதிகரி|बड़ा करो|बढ़ाओ|పెద్దది చేయండి|వలుతాക്കൂ|ದೊಡ್ಡದು ಮಾಡಿ|বড় করো|मोठे करा|મોટું કરો|ਵੱਡਾ ਕਰੋ|بڑا کریں|ବଡ଼ କରନ୍ତୁ/.test(q)) {
+        return { intent: 'CHANGE_VARIABLE_INCREASE', lang, query };
+      }
+      // Decrease variable
+      if (/make it smaller|smaller|decrease|shrink|சிறிதாக்கு|குறை|छोटा करो|घटाओ|చిన్నది చేయండి|ചെറുതാക്കൂ|ಸಣ್ಣದು ಮಾಡಿ|ছোট করো|लहान करा|નાનું કરો|ਛੋਟਾ ਕਰੋ|چھوٹا کریں|ଛୋଟ କରନ୍ତୁ/.test(q)) {
+        return { intent: 'CHANGE_VARIABLE_DECREASE', lang, query };
+      }
+      // Inspector
+      if (/x-ray|xray|labels|measurements|எக்ஸ்ரே|லேபிள்கள்|एक्स-रे|लेबल|ఎక్స్-రే|లేబుల్స్|എക്സ്-റേ|ಎಕ್ಸ್-ರೇ|এক্স-রে|ક્ષ-કિરણ|ਐਕਸ-ਰੇ|ایکس رے|ଏକ୍ସ-ରେ/.test(q)) {
+        return { intent: 'TOGGLE_INSPECTOR', lang, query };
+      }
+
+      return { intent: 'EXPLAIN_CONCEPT', lang, query };
+    }
+
+    // Context-Aware Intent Handler & Visual Action Trigger
+    handleStudentInput(rawQuery, fromVoice = false) {
+      if (!rawQuery) return;
+      const parsed = this.parseIntent(rawQuery);
+      const base = getLangBase(parsed.lang);
+
+      // Auto update resolved language if from voice detection
+      if (this.currentLanguage === 'auto' && parsed.lang !== this.resolvedLanguage) {
+        this.resolvedLanguage = parsed.lang;
+        this.updateAllUI(parsed.lang);
+      }
+
+      let responseText = '';
+      let visualActionName = '';
+
+      // Get lesson metadata from DOM or global
+      const titleEl = document.querySelector('.lesson-title');
+      const lessonTitle = titleEl ? titleEl.textContent : 'Maths Universe';
+      const cueEl = document.getElementById('cueText');
+      const currentCue = cueEl ? cueEl.textContent : '';
+
+      switch (parsed.intent) {
+        case 'CHANGE_SPEED_SLOW':
+          this.setSpeechRate('slow');
+          const speed05Btn = document.querySelector('.speed-btn[data-speed="0.5"]');
+          if (speed05Btn) speed05Btn.click();
+          visualActionName = 'Set Speed to 0.5×';
+          if (base === 'ta') responseText = 'வேகம் 0.5x ஆக குறைக்கப்பட்டது. நான் இனி மெதுவாகவும் நிதானமாகவும் பேசுவேன்!';
+          else if (base === 'hi') responseText = 'गति 0.5x कर दी गई है। अब मैं आराम से और धीरे-धीरे समझाऊंगा!';
+          else if (base === 'te') responseText = 'స్పీడ్ 0.5x కి తగ్గించబడింది. ఇప్పుడు నేను నిదానంగా వివరిస్తాను!';
+          else responseText = 'Speed adjusted to 0.5×. Taking it nice and steady!';
+          break;
+
+        case 'CHANGE_SPEED_FAST':
+          this.setSpeechRate('fast');
+          const speed20Btn = document.querySelector('.speed-btn[data-speed="2.0"]');
+          if (speed20Btn) speed20Btn.click();
+          visualActionName = 'Set Speed to 2.0×';
+          if (base === 'ta') responseText = 'வேகம் 2.0x ஆக அதிகரிக்கப்பட்டது!';
+          else if (base === 'hi') responseText = 'गति 2.0x बढ़ा दी गई है!';
+          else responseText = 'Speed set to fast (2.0×)!';
+          break;
+
+        case 'WHY_CONCEPT':
+          visualActionName = 'Demonstrated Conserved Invariant';
+          // Pulse the why it works section
+          const whySec = document.querySelector('.why-it-works-card');
+          if (whySec) {
+            whySec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            whySec.classList.add('pulse-glow');
+            setTimeout(() => whySec.classList.remove('pulse-glow'), 2000);
+          }
+          if (base === 'ta') {
+            responseText = `கவனியுங்கள்: ${lessonTitle} பாடத்தில், உருவங்களை நகர்த்தினாலும் அவற்றின் அடிப்படை பரப்பளவு அல்லது வடிவியல் பண்புகள் ஒருபோதும் மாறுவதில்லை! இதுவே இதன் ஆழமான உண்மை!`;
+          } else if (base === 'hi') {
+            responseText = `ध्यान से देखिए: ${lessonTitle} में आकृतियों को चाहे जैसे भी स्थानांतरित करें, उनका कुल क्षेत्रफल या संबंध अपरिवर्तनीय रहता है!`;
+          } else if (base === 'te') {
+            responseText = `గమనించండి: ${lessonTitle} లో ఆకారాలను మార్చినా, వాటి నిష్పత్తి లేదా వైశాల్యం ఎప్పటికీ స్థిరంగా ఉంటుంది!`;
+          } else {
+            responseText = `Notice the conserved invariant in ${lessonTitle}: the fundamental geometric property or area remains strictly identical across transformations!`;
+          }
+          break;
+
+        case 'SHOW_FORMULA':
+          visualActionName = 'Highlighted Formula Card';
+          const formulaPill = document.querySelector('.why-card-formula') || document.querySelector('.card-formula-pill');
+          if (formulaPill) {
+            formulaPill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            formulaPill.classList.add('pulse-glow');
+            setTimeout(() => formulaPill.classList.remove('pulse-glow'), 2500);
+          }
+          if (base === 'ta') responseText = 'இதோ இந்த நிரூபணத்தின் முக்கிய சூத்திரம் திரையில் முன்னிலைப்படுத்தப்பட்டுள்ளது!';
+          else if (base === 'hi') responseText = 'यहाँ इस प्रमाण का मुख्य सूत्र स्क्रीन पर हाइलाइट किया गया है!';
+          else responseText = 'Here is the central formula highlighted on your screen!';
+          break;
+
+        case 'GIVE_HINT':
+          visualActionName = 'Provided Step Hint';
+          const predBox = document.querySelector('.pred-box');
+          if (predBox) {
+            predBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          if (base === 'ta') responseText = 'ஒரு சிறிய குறிப்பு: உருவங்கள் மாறும்போது எது மாறாமல் நிலையாக இருக்கிறது என்பதை உற்றுப் பாருங்கள்!';
+          else if (base === 'hi') responseText = 'एक संकेत: ध्यान दें कि रूपांतरण के दौरान कौन सा भाग पूरी तरह स्थिर और संरक्षित रहता है!';
+          else responseText = 'Hint: Look closely at which area or boundary remains strictly invariant throughout the motion!';
+          break;
+
+        case 'START_CHALLENGE':
+          visualActionName = 'Scrolled to Prediction Challenge';
+          const pBox = document.querySelector('.pred-box');
+          if (pBox) {
+            pBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            pBox.classList.add('pulse-glow');
+            setTimeout(() => pBox.classList.remove('pulse-glow'), 2000);
+          }
+          if (base === 'ta') responseText = 'அருமை! கணிப்பு சவால் தயார். சரியான விடையைத் தேர்ந்தெடுங்கள்!';
+          else if (base === 'hi') responseText = 'बढ़िया! भविष्यवाणी चुनौती तैयार है। सही विकल्प चुनें!';
+          else responseText = 'Challenge mode active! Predict what happens when you transform the shapes!';
+          break;
+
+        case 'PLAY_RESUME':
+          const playBtn = document.getElementById('btnPlayPause');
+          if (playBtn) playBtn.click();
+          visualActionName = 'Triggered Play Animation';
+          if (base === 'ta') responseText = 'இயக்கம் தொடங்கப்பட்டது!';
+          else if (base === 'hi') responseText = 'एनिमेशन शुरू हो गया है!';
+          else responseText = 'Transformation animation playing!';
+          break;
+
+        case 'PAUSE_STOP':
+          const pauseBtn = document.getElementById('btnPlayPause');
+          if (pauseBtn) {
+            const playIcon = document.getElementById('playIcon');
+            if (playIcon && playIcon.textContent === '⏸') pauseBtn.click();
+          }
+          visualActionName = 'Paused Animation';
+          if (base === 'ta') responseText = 'இயக்கம் தற்காலிகமாக நிறுத்தப்பட்டது.';
+          else if (base === 'hi') responseText = 'एनिमेशन रोक दिया गया है।';
+          else responseText = 'Transformation paused.';
+          break;
+
+        case 'RESET_VIEW':
+          const rBtn = document.getElementById('btnReset');
+          if (rBtn) rBtn.click();
+          visualActionName = 'Reset to Initial Stage';
+          if (base === 'ta') responseText = 'தொடக்க நிலைக்கு மீட்டமைக்கப்பட்டது!';
+          else if (base === 'hi') responseText = 'प्रारंभिक स्थिति में रीसेट कर दिया गया!';
+          else responseText = 'Reset to initial step.';
+          break;
+
+        case 'STEP_FORWARD':
+          const fwdBtn = document.getElementById('btnStepFwd');
+          if (fwdBtn) fwdBtn.click();
+          visualActionName = 'Stepped Forward 5%';
+          if (base === 'ta') responseText = 'ஒரு படி முன்னேறினோம்!';
+          else if (base === 'hi') responseText = 'एक कदम आगे बढ़े!';
+          else responseText = 'Stepped forward!';
+          break;
+
+        case 'STEP_BACKWARD':
+          const backBtn = document.getElementById('btnStepBack');
+          if (backBtn) backBtn.click();
+          visualActionName = 'Stepped Backward 5%';
+          if (base === 'ta') responseText = 'ஒரு படி பின்னே சென்றோம்!';
+          else if (base === 'hi') responseText = 'एक कदम पीछे गए!';
+          else responseText = 'Stepped backward!';
+          break;
+
+        case 'NEXT_LESSON':
+          const nextBtn = document.querySelector('.nav-arrow-btn[id="btnNextLesson"]') || document.querySelectorAll('.nav-arrow-btn')[1];
+          if (nextBtn && nextBtn.href) {
+            visualActionName = 'Navigating to Next Lesson';
+            if (base === 'ta') responseText = 'அடுத்த பாடத்திற்குச் செல்கிறோம்!';
+            else if (base === 'hi') responseText = 'अगले पाठ की ओर बढ़ रहे हैं!';
+            else responseText = 'Moving to next lesson!';
+            setTimeout(() => { window.location.href = nextBtn.href; }, 1200);
+          } else {
+            responseText = 'You are at the final lesson!';
+          }
+          break;
+
+        case 'PREV_LESSON':
+          const prevBtn = document.querySelector('.nav-arrow-btn[id="btnPrevLesson"]') || document.querySelectorAll('.nav-arrow-btn')[0];
+          if (prevBtn && prevBtn.href) {
+            visualActionName = 'Navigating to Previous Lesson';
+            if (base === 'ta') responseText = 'முந்தைய பாடத்திற்குச் செல்கிறோம்!';
+            else if (base === 'hi') responseText = 'पिछले पाठ की ओर बढ़ रहे हैं!';
+            else responseText = 'Moving to previous lesson!';
+            setTimeout(() => { window.location.href = prevBtn.href; }, 1200);
+          } else {
+            responseText = 'You are at the first lesson!';
+          }
+          break;
+
+        case 'REPEAT':
+          this.repeatLast();
+          return;
+
+        case 'CHANGE_VARIABLE_INCREASE':
+          const incBtn = document.getElementById('btnParamInc');
+          if (incBtn) incBtn.click();
+          visualActionName = 'Increased Parameter Slider';
+          if (base === 'ta') responseText = 'அளவு அதிகரிக்கப்பட்டது!';
+          else if (base === 'hi') responseText = 'मान बढ़ा दिया गया!';
+          else responseText = 'Increased parameter value!';
+          break;
+
+        case 'CHANGE_VARIABLE_DECREASE':
+          const decBtn = document.getElementById('btnParamDec');
+          if (decBtn) decBtn.click();
+          visualActionName = 'Decreased Parameter Slider';
+          if (base === 'ta') responseText = 'அளவு குறைக்கப்பட்டது!';
+          else if (base === 'hi') responseText = 'मान घटा दिया गया!';
+          else responseText = 'Decreased parameter value!';
+          break;
+
+        case 'TOGGLE_INSPECTOR':
+          const inspChk = document.getElementById('chkInspector');
+          if (inspChk) {
+            inspChk.checked = !inspChk.checked;
+            inspChk.dispatchEvent(new Event('change'));
+          }
+          visualActionName = 'Toggled X-Ray Inspector';
+          if (base === 'ta') responseText = 'எக்ஸ்ரே அளவீடுகள் மாற்றப்பட்டன!';
+          else if (base === 'hi') responseText = 'एक्स-रे माप टॉगल किया गया!';
+          else responseText = 'X-Ray inspector toggled!';
+          break;
+
+        default: // EXPLAIN_CONCEPT
+          visualActionName = 'Explained Current Concept';
+          if (currentCue) {
+            responseText = currentCue;
+          } else {
+            if (base === 'ta') responseText = `இந்த ${lessonTitle} பாடத்தில் நாம் காணும் காட்சி கணித நிரூபணத்தை உற்றுப் பாருங்கள். டைம்லைனை நகர்த்தி ஒவ்வொரு மாற்றத்தையும் ஆராயுங்கள்!`;
+            else if (base === 'hi') responseText = `इस ${lessonTitle} में दृश्य गणितीय प्रमाण को देखें। टाइमलाइन को आगे-पीछे करके प्रत्येक बदलाव का अन्वेषण करें!`;
+            else responseText = `Look closely at this visual transformation for ${lessonTitle}. Drag the scrubber along the timeline to explore how the proof unfolds!`;
+          }
+          break;
+      }
+
+      // Display in Guide Dialog UI
+      this.displayGuideInteraction(rawQuery, responseText, visualActionName, parsed.lang);
+
+      // Speak text if responseMode allows voice
+      if (this.responseMode !== 'text_only') {
+        this.speak(responseText, parsed.lang);
+      }
+    }
+
+    displayGuideInteraction(query, response, actionName, lang) {
+      const modal = document.getElementById('mathsGuideModal');
+      const transcriptEl = document.getElementById('guideTranscriptText');
+      const responseEl = document.getElementById('guideResponseText');
+      const actionBadge = document.getElementById('guideActionBadge');
+
+      if (transcriptEl) transcriptEl.textContent = `“${query}”`;
+      if (responseEl) responseEl.textContent = response;
+      if (actionBadge) {
+        if (actionName) {
+          actionBadge.textContent = `✨ ${actionName}`;
+          actionBadge.style.display = 'inline-block';
+        } else {
+          actionBadge.style.display = 'none';
+        }
+      }
+
+      if (modal && modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+      }
+    }
+
+    updateGuideMicUI(isListening) {
+      const micBtn = document.getElementById('guideBigMicBtn');
+      const micStatus = document.getElementById('guideMicStatus');
+      const floatingMic = document.getElementById('floatingGuideMic');
+
+      if (micBtn) {
+        micBtn.classList.toggle('listening', isListening);
+      }
+      if (floatingMic) {
+        floatingMic.classList.toggle('listening', isListening);
+      }
+      if (micStatus) {
+        if (isListening) {
+          const langObj = SUPPORTED_LANGUAGES.find(l => l.code === this.resolvedLanguage);
+          const langName = langObj ? langObj.native : 'your language';
+          micStatus.textContent = `Listening in ${langName}... Speak now!`;
+          micStatus.classList.add('status-active');
+        } else {
+          micStatus.textContent = `Tap microphone to speak or type below`;
+          micStatus.classList.remove('status-active');
+        }
+      }
+    }
+
+    toggleListening() {
+      if (!this.recognition) {
+        const msg = this.getText('voiceUnavailable');
+        alert(msg);
+        const input = document.getElementById('guideTextInput');
+        if (input) input.focus();
+        return;
+      }
+
+      if (this.isListening) {
+        try { this.recognition.stop(); } catch(e){}
+      } else {
+        try {
+          this.recognition.lang = this.resolvedLanguage;
+          this.recognition.start();
+        } catch(e) {
+          console.warn('Start recognition error:', e);
+        }
+      }
+    }
+
+    // Dynamic Zero-Reload UI Synchronization across elements
+    updateAllUI(langCode) {
+      const base = getLangBase(langCode);
+
+      // 1. Language selector element itself
+      const sel = document.getElementById('languageSelect');
+      if (sel && sel.value !== this.currentLanguage) {
+        sel.value = this.currentLanguage;
+      }
+
+      // 2. Buttons & Labels
+      const btnNotes = document.getElementById('btnOpenNotes');
+      if (btnNotes) btnNotes.textContent = this.getText('studentNotes', langCode);
+
+      const btnHelp = document.getElementById('btnHelp');
+      if (btnHelp) btnHelp.textContent = this.getText('help', langCode);
+
+      const btnGuide = document.getElementById('btnAskGuide');
+      if (btnGuide) btnGuide.innerHTML = `<span>🎤</span> <span>${this.getText('askGuide', langCode)}</span>`;
+
+      const missionLabel = document.querySelector('.mission-label');
+      if (missionLabel) missionLabel.textContent = this.getText('mission', langCode);
+
+      const analogyBadge = document.querySelector('.analogy-badge');
+      if (analogyBadge) analogyBadge.textContent = this.getText('analogy', langCode);
+
+      const cueBadge = document.querySelector('.cue-badge');
+      if (cueBadge) cueBadge.textContent = this.getText('teacherVoice', langCode);
+
+      const cueSpeakBtn = document.getElementById('cueSpeakBtn');
+      if (cueSpeakBtn) cueSpeakBtn.textContent = this.getText('listen', langCode);
+
+      const dragHint = document.getElementById('canvasDragHint');
+      if (dragHint) dragHint.textContent = this.getText('dragHint', langCode);
+
+      // Play / Pause label
+      const playLabel = document.getElementById('playLabel');
+      if (playLabel) {
+        const isPlaying = document.getElementById('playIcon')?.textContent === '⏸';
+        playLabel.textContent = isPlaying ? this.getText('pause', langCode) : this.getText('play', langCode);
+      }
+
+      // Loop button
+      const loopBtn = document.getElementById('btnLoop');
+      if (loopBtn) loopBtn.textContent = this.getText('loop', langCode);
+
+      // Checkbox labels
+      const chkGhostLabel = document.querySelector('label[for="chkGhost"]') || document.getElementById('chkGhost')?.parentElement;
+      if (chkGhostLabel) {
+        const span = chkGhostLabel.querySelector('span');
+        if (span) span.textContent = this.getText('ghost', langCode);
+      }
+      const chkSnapLabel = document.querySelector('label[for="chkSnap"]') || document.getElementById('chkSnap')?.parentElement;
+      if (chkSnapLabel) {
+        const span = chkSnapLabel.querySelector('span');
+        if (span) span.textContent = this.getText('snap', langCode);
+      }
+      const chkAreaLabel = document.querySelector('label[for="chkAreaLock"]') || document.getElementById('chkAreaLock')?.parentElement;
+      if (chkAreaLabel) {
+        const span = chkAreaLabel.querySelector('span');
+        if (span) span.textContent = this.getText('areaLock', langCode);
+      }
+      const chkInspLabel = document.querySelector('label[for="chkInspector"]') || document.getElementById('chkInspector')?.parentElement;
+      if (chkInspLabel) {
+        const span = chkInspLabel.querySelector('span');
+        if (span) span.textContent = this.getText('inspector', langCode);
+      }
+
+      // Reset button
+      const resetBtn = document.getElementById('btnReset');
+      if (resetBtn) resetBtn.textContent = this.getText('reset', langCode);
+
+      // Why it works title
+      const whyTitle = document.querySelector('.why-title');
+      if (whyTitle) whyTitle.textContent = this.getText('whyItWorks', langCode);
+
+      // Prediction Title
+      const predTitle = document.querySelector('.pred-title');
+      if (predTitle) predTitle.textContent = this.getText('prediction', langCode);
+
+      // Stage Tabs
+      const stepTabs = document.querySelectorAll('.step-tab-btn');
+      if (stepTabs && stepTabs.length >= 3) {
+        const t1 = stepTabs[0].querySelector('.step-name');
+        if (t1) t1.textContent = this.getText('stage1', langCode);
+        const t2 = stepTabs[1].querySelector('.step-name');
+        if (t2) t2.textContent = this.getText('stage2', langCode);
+        const t3 = stepTabs[2].querySelector('.step-name');
+        if (t3) t3.textContent = this.getText('stage3', langCode);
+      }
+
+      // Guide Modal Header Badge
+      const guideBadge = document.getElementById('guideActiveLangBadge');
+      if (guideBadge) {
+        const langObj = SUPPORTED_LANGUAGES.find(l => l.code === langCode);
+        guideBadge.textContent = langObj ? `${langObj.flag} ${langObj.native}` : langCode;
+      }
+    }
+  }
+
+  // 5. Inject Maths Guide Modal & Floating Trigger into DOM
+  function injectMathsGuideUI(manager) {
+    // Check if already injected
+    if (document.getElementById('mathsGuideModal')) return;
+
+    // Styles for Maths Guide
+    const style = document.createElement('style');
+    style.id = 'mathsGuideStyles';
+    style.textContent = `
+      .lang-selector-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f8fafc;
+        border: 1px solid var(--border-subtle, #e2e8f0);
+        border-radius: 10px;
+        padding: 4px 10px;
+      }
+      .lang-select-label {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--purple-primary, #7c3aed);
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+      .language-select {
+        background: transparent;
+        border: none;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main, #0f172a);
+        cursor: pointer;
+        outline: none;
+        padding-right: 4px;
+      }
+      .language-select option {
+        background: #ffffff;
+        color: #0f172a;
+      }
+      .btn-maths-guide {
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+      }
+      .btn-maths-guide:hover {
+        background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%) !important;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+      }
+      /* Floating Assistant Button */
+      .floating-guide-trigger {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+        color: #ffffff;
+        border: 2px solid #ffffff;
+        border-radius: 9999px;
+        padding: 12px 20px;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+        transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+      }
+      .floating-guide-trigger:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 12px 28px rgba(124, 58, 237, 0.5);
+      }
+      .floating-guide-trigger.listening {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        animation: pulseRing 1.5s infinite;
+      }
+      @keyframes pulseRing {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+        70% { box-shadow: 0 0 0 16px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      }
+      /* Guide Modal Dialog */
+      .guide-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        transition: opacity 0.2s ease;
+      }
+      .guide-modal-overlay.hidden {
+        display: none;
+      }
+      .guide-modal-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 580px;
+        box-shadow: 0 20px 40px -8px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.05);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: modalPop 0.25s cubic-bezier(0.2, 0, 0, 1);
+      }
+      @keyframes modalPop {
+        from { opacity: 0; transform: scale(0.95) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .guide-modal-header {
+        padding: 16px 22px;
+        background: #fafbfc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .guide-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .guide-avatar {
+        font-size: 24px;
+      }
+      .guide-title-box h3 {
+        font-size: 16px;
+        font-weight: 800;
+        color: #0f172a;
+      }
+      .guide-title-box p {
+        font-size: 12px;
+        color: #64748b;
+      }
+      .guide-lang-badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: #7c3aed;
+        background: #ede9fe;
+        padding: 4px 10px;
+        border-radius: 9999px;
+      }
+      .guide-close-btn {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: #64748b;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+      .guide-close-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+      .guide-modal-body {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+      /* Big Mic Hub */
+      .guide-mic-hub {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 20px;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 16px;
+      }
+      .guide-big-mic-btn {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+        color: #ffffff;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+        transition: all 0.2s;
+      }
+      .guide-big-mic-btn:hover {
+        transform: scale(1.08);
+      }
+      .guide-big-mic-btn.listening {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.25);
+        animation: micPulse 1.2s infinite;
+      }
+      @keyframes micPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+      }
+      .guide-mic-status {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        text-align: center;
+      }
+      .guide-mic-status.status-active {
+        color: #059669;
+        font-weight: 700;
+      }
+      /* Chat bubble display */
+      .guide-chat-stream {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .guide-user-bubble {
+        align-self: flex-end;
+        background: #ede9fe;
+        color: #5b21b6;
+        padding: 10px 14px;
+        border-radius: 14px 14px 2px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        max-width: 85%;
+      }
+      .guide-tutor-bubble {
+        align-self: flex-start;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px 14px 14px 2px;
+        padding: 14px;
+        font-size: 13px;
+        color: #1e293b;
+        line-height: 1.5;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        max-width: 90%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .guide-action-badge {
+        align-self: flex-start;
+        font-size: 11px;
+        font-weight: 700;
+        background: #dcfce7;
+        color: #166534;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .guide-audio-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .guide-mini-btn {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+        cursor: pointer;
+      }
+      .guide-mini-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+      /* Quick suggestions */
+      .guide-quick-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .guide-quick-pill {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 9999px;
+        padding: 5px 12px;
+        font-size: 12px;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .guide-quick-pill:hover {
+        background: #f5f3ff;
+        border-color: #7c3aed;
+        color: #6d28d9;
+      }
+      /* Input row */
+      .guide-input-row {
+        display: flex;
+        gap: 8px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 14px;
+      }
+      .guide-text-input {
+        flex: 1;
+        padding: 10px 14px;
+        font-size: 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        outline: none;
+      }
+      .guide-text-input:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+      }
+      .guide-send-btn {
+        background: #7c3aed;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        padding: 0 16px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .guide-send-btn:hover {
+        background: #6d28d9;
+      }
+      /* Voice controls toolbar */
+      .guide-controls-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #f8fafc;
+        border-radius: 10px;
+        font-size: 12px;
+        color: #64748b;
+      }
+      .guide-rate-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .rate-pill {
+        padding: 2px 8px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 11px;
+        cursor: pointer;
+      }
+      .rate-pill.active {
+        background: #7c3aed;
+        color: #ffffff;
+        border-color: #7c3aed;
+      }
+      .pulse-glow {
+        animation: highlightSection 1.5s ease;
+      }
+      @keyframes highlightSection {
+        0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7); }
+        50% { box-shadow: 0 0 0 8px rgba(124, 58, 237, 0.2); }
+        100% { box-shadow: none; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Create Modal HTML
+    const modal = document.createElement('div');
+    modal.id = 'mathsGuideModal';
+    modal.className = 'guide-modal-overlay hidden';
+    modal.innerHTML = `
+      <div class="guide-modal-card">
+        <div class="guide-modal-header">
+          <div class="guide-title-row">
+            <span class="guide-avatar">📐</span>
+            <div class="guide-title-box">
+              <h3>Maths Guide</h3>
+              <p>Multilingual AI Voice & Visual Tutor</p>
+            </div>
+            <span class="guide-lang-badge" id="guideActiveLangBadge">🌐 Auto</span>
+          </div>
+          <button class="guide-close-btn" id="guideCloseBtn" title="Close Maths Guide">✕</button>
+        </div>
+
+        <div class="guide-modal-body">
+          <!-- Voice Recognition Mic Hub -->
+          <div class="guide-mic-hub">
+            <button class="guide-big-mic-btn" id="guideBigMicBtn" title="Click to Speak">🎙️</button>
+            <div class="guide-mic-status" id="guideMicStatus">Tap microphone to speak or type below</div>
+          </div>
+
+          <!-- Controls strip (rate & mode) -->
+          <div class="guide-controls-strip">
+            <div class="guide-rate-group">
+              <span>Speed:</span>
+              <button class="rate-pill ${manager.speechRate === 'slow' ? 'active' : ''}" data-rate="slow">🐢 Slow</button>
+              <button class="rate-pill ${manager.speechRate === 'normal' ? 'active' : ''}" data-rate="normal">🚶 Normal</button>
+              <button class="rate-pill ${manager.speechRate === 'fast' ? 'active' : ''}" data-rate="fast">🐇 Fast</button>
+            </div>
+            <div class="guide-rate-group">
+              <span>Level:</span>
+              <button class="rate-pill active" data-level="simple">Simple</button>
+              <button class="rate-pill" data-level="step">Step-by-Step</button>
+            </div>
+          </div>
+
+          <!-- Quick Suggestion Prompts -->
+          <div class="guide-quick-pills" id="guideQuickPills">
+            <button class="guide-quick-pill" data-q="Explain this concept">💡 Explain this</button>
+            <button class="guide-quick-pill" data-q="Why does this formula work?">❓ Why does this work?</button>
+            <button class="guide-quick-pill" data-q="Make it slower">🐢 Make it slower</button>
+            <button class="guide-quick-pill" data-q="Give me a hint">🔍 Give me a hint</button>
+            <button class="guide-quick-pill" data-q="Start challenge">🎯 Start challenge</button>
+            <button class="guide-quick-pill" data-q="Show formula">📐 Show formula</button>
+          </div>
+
+          <!-- Stream chat / Responses -->
+          <div class="guide-chat-stream">
+            <div class="guide-user-bubble" id="guideTranscriptText">“Explain this mathematical proof”</div>
+            <div class="guide-tutor-bubble">
+              <span class="guide-action-badge" id="guideActionBadge" style="display:none;">✨ Action</span>
+              <div id="guideResponseText">Welcome to Maths Universe! Speak in Tamil, Hindi, Telugu, English, or any supported language, and I will visually explain and guide you!</div>
+              <div class="guide-audio-actions">
+                <button class="guide-mini-btn" id="guideSpeakAgainBtn">🔊 Speak</button>
+                <button class="guide-mini-btn" id="guideRepeatBtn">🔁 Repeat</button>
+                <button class="guide-mini-btn" id="guideStopBtn">⏹ Stop</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Text Input Row -->
+          <div class="guide-input-row">
+            <input type="text" class="guide-text-input" id="guideTextInput" placeholder="Ask a question in your language or in English...">
+            <button class="guide-send-btn" id="guideSendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Floating trigger button on bottom-right corner
+    const floatingBtn = document.createElement('button');
+    floatingBtn.id = 'floatingGuideMic';
+    floatingBtn.className = 'floating-guide-trigger';
+    floatingBtn.innerHTML = `<span>🎤</span> <span>Ask Maths Guide</span>`;
+    document.body.appendChild(floatingBtn);
+
+    // Event Listeners for UI
+    const openGuide = () => {
+      modal.classList.remove('hidden');
+      manager.updateGuideMicUI(manager.isListening);
+      const input = document.getElementById('guideTextInput');
+      if (input) input.focus();
+    };
+
+    floatingBtn.addEventListener('click', openGuide);
+
+    const headerBtn = document.getElementById('btnAskGuide');
+    if (headerBtn) headerBtn.addEventListener('click', openGuide);
+
+    const closeBtn = document.getElementById('guideCloseBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+      }
+    });
+
+    // Big Mic Click
+    const bigMic = document.getElementById('guideBigMicBtn');
+    if (bigMic) {
+      bigMic.addEventListener('click', () => manager.toggleListening());
+    }
+
+    // Send Button & Text Input
+    const sendBtn = document.getElementById('guideSendBtn');
+    const input = document.getElementById('guideTextInput');
+    const handleSend = () => {
+      if (!input) return;
+      const text = input.value.trim();
+      if (text) {
+        input.value = '';
+        manager.handleStudentInput(text, false);
+      }
+    };
+    if (sendBtn) sendBtn.addEventListener('click', handleSend);
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleSend();
+      });
+    }
+
+    // Quick suggestion pills
+    const pillsWrap = document.getElementById('guideQuickPills');
+    if (pillsWrap) {
+      pillsWrap.addEventListener('click', (e) => {
+        const pill = e.target.closest('.guide-quick-pill');
+        if (pill && pill.dataset.q) {
+          manager.handleStudentInput(pill.dataset.q, false);
+        }
+      });
+    }
+
+    // Audio controls
+    const speakAgainBtn = document.getElementById('guideSpeakAgainBtn');
+    if (speakAgainBtn) {
+      speakAgainBtn.addEventListener('click', () => {
+        const respText = document.getElementById('guideResponseText')?.textContent;
+        if (respText) manager.speak(respText);
+      });
+    }
+    const repeatBtn = document.getElementById('guideRepeatBtn');
+    if (repeatBtn) repeatBtn.addEventListener('click', () => manager.repeatLast());
+
+    const stopBtn = document.getElementById('guideStopBtn');
+    if (stopBtn) stopBtn.addEventListener('click', () => manager.stopSpeaking());
+
+    // Speed buttons
+    modal.querySelectorAll('.rate-pill[data-rate]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        modal.querySelectorAll('.rate-pill[data-rate]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        manager.setSpeechRate(btn.dataset.rate);
+      });
+    });
+
+    // Explanation level
+    modal.querySelectorAll('.rate-pill[data-level]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        modal.querySelectorAll('.rate-pill[data-level]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        manager.setExplanationLevel(btn.dataset.level);
+      });
+    });
+  }
+
+  // 6. Bootstrap on Document Ready
+  function init() {
+    window.mathsLanguageManager = new MathsLanguageManager();
+
+    // Hook existing or injected <select id="languageSelect">
+    const bindSelect = () => {
+      const select = document.getElementById('languageSelect');
+      if (select) {
+        select.value = window.mathsLanguageManager.currentLanguage;
+        select.addEventListener('change', (e) => {
+          const newLang = e.target.value;
+          window.mathsLanguageManager.setLanguage(newLang);
+        });
+      }
+    };
+
+    bindSelect();
+    injectMathsGuideUI(window.mathsLanguageManager);
+
+    // Initial UI synchronization
+    window.mathsLanguageManager.updateAllUI(window.mathsLanguageManager.resolvedLanguage);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+  </script>
+</body>
+</html>
